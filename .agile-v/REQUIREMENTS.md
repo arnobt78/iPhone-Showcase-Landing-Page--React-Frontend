@@ -10,3 +10,4 @@
 - REQ-0008: Make carousel playback and model color/size controls keyboard-operable without changing their visual design.
 - REQ-0009: Prevent the chip animation from widening the viewport while preserving the animation.
 - REQ-0010: Omit production source maps when Sentry upload is not enabled, while retaining them for configured uploads.
+- REQ-0011: Publish the user-requested project instructions and license change, reconcile affected documentation with the Vite SPA, and retain only the main and reusable preview branches after verification.

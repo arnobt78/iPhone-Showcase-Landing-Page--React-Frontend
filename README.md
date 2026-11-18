@@ -134,6 +134,7 @@ iphone/
 │   ├── hooks/useNearbyVideo.ts # Defer lower-page videos near the viewport
 │   └── utils/                  # Asset paths and GSAP helpers
 ├── tests/monitoring.test.ts    # Tunnel behavior tests
+├── docs/                       # Agile V protocol and engineering playbook
 └── SECURITY.md                 # Private vulnerability reporting
 ```
 

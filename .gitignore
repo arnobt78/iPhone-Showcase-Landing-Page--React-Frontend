@@ -8,6 +8,7 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+.netlify/
 dist
 dist-ssr
 *.local
@@ -23,6 +24,6 @@ dist-ssr
 *.sln
 *.sw?
 
-# Sentry Config File
-.env.sentry-build-plugin
-.env
+# Local environment files may contain secrets; keep the example available.
+.env*
+!.env.example

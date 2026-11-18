@@ -39,7 +39,8 @@ export default defineConfig({
       : []),
   ],
   build: {
-    sourcemap: true,
+    // Only generate source maps for builds that explicitly upload them to Sentry.
+    sourcemap: Boolean(process.env.SENTRY_AUTH_TOKEN),
     chunkSizeWarningLimit: 1600,
   },
 });

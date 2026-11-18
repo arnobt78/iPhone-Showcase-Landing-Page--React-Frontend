@@ -1,12 +1,12 @@
 import { useGSAP } from "@gsap/react";
-import { useRef } from "react";
+import { useNearbyVideo } from "../hooks/useNearbyVideo";
 import gsap from "gsap";
 import { animateWithGsap } from "../utils/animations";
 import { explore1Img, explore2Img, exploreVideo } from "../utils";
 
 /** "Explore the full story": heading, two big titles, explore video, two images (g_grow), two text blocks (g_text). All scroll-triggered. */
 function Features(): React.ReactElement {
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const [videoRef, nearby] = useNearbyVideo();
 
   useGSAP(() => {
     gsap.to("#exploreVideo", {
@@ -16,7 +16,7 @@ function Features(): React.ReactElement {
         start: "-10% bottom",
       },
       onComplete: () => {
-        videoRef.current?.play();
+        void videoRef.current?.play().catch(() => {});
       },
     });
 
@@ -59,8 +59,8 @@ function Features(): React.ReactElement {
                 muted
                 autoPlay
                 ref={videoRef}
+                src={nearby ? exploreVideo : undefined}
               >
-                <source src={exploreVideo} type="video/mp4" />
               </video>
             </div>
 

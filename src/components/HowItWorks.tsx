@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useNearbyVideo } from "../hooks/useNearbyVideo";
 import { chipImg, frameImg, frameVideo } from "../utils";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -6,7 +6,7 @@ import { animateWithGsap } from "../utils/animations";
 
 /** A17 Pro chip section: chip image (gsap.from scale/opacity), title, frame + game video, then text blocks with g_fadeIn. */
 function HowItWorks(): React.ReactElement {
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const [videoRef, nearby] = useNearbyVideo();
 
   useGSAP(() => {
     gsap.from("#chip", {
@@ -31,8 +31,8 @@ function HowItWorks(): React.ReactElement {
   return (
     <section className="common-padding">
       <div className="screen-max-width">
-        <div id="chip" className="flex-center w-full my-20">
-          <img src={chipImg} alt="chip" width={180} height={180} />
+        <div className="flex-center w-full my-20 overflow-hidden">
+          <img id="chip" src={chipImg} alt="chip" width={180} height={180} />
         </div>
 
         <div className="flex flex-col items-center">
@@ -63,8 +63,8 @@ function HowItWorks(): React.ReactElement {
                 muted
                 autoPlay
                 ref={videoRef}
+                src={nearby ? frameVideo : undefined}
               >
-                <source src={frameVideo} type="video/mp4" />
               </video>
             </div>
           </div>

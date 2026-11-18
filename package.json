@@ -3,10 +3,14 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "engines": {
+    "node": "24.x"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint . --max-warnings 0",
+    "test": "node --test tests/*.test.ts",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -14,7 +18,7 @@
     "@react-three/drei": "^9.117.0",
     "@react-three/fiber": "^8.17.10",
     "@sentry/react": "^7.106.0",
-    "@sentry/vite-plugin": "^2.14.3",
+    "@sentry/vite-plugin": "11.14.0",
     "gsap": "^3.12.5",
     "lucide-react": "^0.460.0",
     "react": "^18.3.1",
@@ -23,7 +27,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",
-    "@types/node": "^22.19.15",
+    "@types/node": "^24.19.2",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@types/three": "^0.169.0",

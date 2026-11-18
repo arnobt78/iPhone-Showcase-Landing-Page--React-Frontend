@@ -30,8 +30,8 @@ function VideoCarousel(): React.ReactElement {
     isLastVideo: false,
     isPlaying: false,
   });
+  const [furthestSlide, setFurthestSlide] = useState(0);
 
-  const [loadedData, setLoadedData] = useState<unknown[]>([]);
   const { isEnd, isLastVideo, startPlay, videoId, isPlaying } = video;
 
   // Slide position by videoId; when video ends we advance and this re-runs
@@ -124,18 +124,23 @@ function VideoCarousel(): React.ReactElement {
     };
   }, [videoId, startPlay, isPlaying]);
 
-  // Play/pause current video when startPlay or isPlaying change; wait until all 4 videos have fired onLoadedMetadata
+  // Only the active slide needs to load before playback can start.
   useEffect(() => {
     const vRef = videoRef.current;
-    if (loadedData.length <= 3) return;
     const current = vRef[videoId];
     if (!current) return;
+    let cancelled = false;
     if (!isPlaying) {
       current.pause();
     } else if (startPlay) {
-      current.play();
+      void current.play().catch((error: unknown) => {
+        if (!cancelled && !(error instanceof DOMException && error.name === "AbortError")) {
+          setVideo((previous) => ({ ...previous, isPlaying: false }));
+        }
+      });
     }
-  }, [startPlay, videoId, isPlaying, loadedData]);
+    return () => { cancelled = true; };
+  }, [startPlay, videoId, isPlaying]);
 
   type ProcessType =
     | "video-end"
@@ -148,6 +153,7 @@ function VideoCarousel(): React.ReactElement {
   const handleProcess = (type: ProcessType, i?: number): void => {
     switch (type) {
       case "video-end":
+        setFurthestSlide((previous) => Math.max(previous, (i ?? 0) + 1));
         setVideo((pre) => ({ ...pre, isEnd: true, videoId: (i ?? 0) + 1 }));
         break;
       case "video-last":
@@ -167,13 +173,6 @@ function VideoCarousel(): React.ReactElement {
     }
   };
 
-  const handleLoadedMetaData = (
-    _i: number,
-    e: React.SyntheticEvent<HTMLVideoElement, Event>
-  ): void => {
-    setLoadedData((pre) => [...pre, e]);
-  };
-
   return (
     <>
       <div className="flex items-center">
@@ -187,7 +186,8 @@ function VideoCarousel(): React.ReactElement {
                   className={`${
                     list.id === 2 ? "translate-x-44" : ""
                   } pointer-events-none`}
-                  preload="auto"
+                  preload="none"
+                  src={startPlay && i <= furthestSlide ? list.video : undefined}
                   muted
                   ref={(el) => {
                     videoRef.current[i] = el;
@@ -200,10 +200,7 @@ function VideoCarousel(): React.ReactElement {
                   onPlay={() =>
                     setVideo((pre) => ({ ...pre, isPlaying: true }))
                   }
-                  onLoadedMetadata={(e) => handleLoadedMetaData(i, e)}
-                >
-                  <source src={list.video} type="video/mp4" />
-                </video>
+                />
               </div>
 
               <div className="absolute top-12 left-[5%] z-10">
@@ -242,19 +239,19 @@ function VideoCarousel(): React.ReactElement {
           type="button"
           className="control-btn"
           aria-label={isLastVideo ? "replay" : !isPlaying ? "play" : "pause"}
+          onClick={() =>
+            isLastVideo
+              ? handleProcess("video-reset")
+              : !isPlaying
+                ? handleProcess("play")
+                : handleProcess("pause")
+          }
         >
           <img
             src={
               isLastVideo ? replayImg : !isPlaying ? playImg : pauseImg
             }
-            alt={isLastVideo ? "replay" : !isPlaying ? "play" : "pause"}
-            onClick={() =>
-              isLastVideo
-                ? handleProcess("video-reset")
-                : !isPlaying
-                  ? handleProcess("play")
-                  : handleProcess("pause")
-            }
+            alt=""
           />
         </button>
       </div>

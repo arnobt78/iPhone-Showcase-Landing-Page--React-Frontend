@@ -2,15 +2,16 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![React](https://img.shields.io/badge/React-18.3.1-blue)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.6-blue)](https://www.typescriptlang.org/)
-[![Vite](https://img.shields.io/badge/Vite-7-black)](https://vitejs.dev/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-3.4-38bdf8)](https://tailwindcss.com/)
-[![Three.js](https://img.shields.io/badge/Three.js-0.169-black)](https://threejs.org/)
-[![GSAP](https://img.shields.io/badge/GSAP-3.12-88ce02)](https://gsap.com/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.6.3-blue)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-7.3.8-646CFF)](https://vite.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.19-38BDF8)](https://tailwindcss.com/)
+[![Three.js](https://img.shields.io/badge/Three.js-0.169.0-black)](https://threejs.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-24.x-339933)](https://nodejs.org/)
 
-An interactive, single-page product showcase inspired by the Apple iPhone 15 Pro experience. It is built for **learning and instruction**: you get a full React + TypeScript codebase with 3D (Three.js), scroll and timeline animations (GSAP), and a responsive UI (Tailwind CSS). There is no backend or database—only frontend assets, optional error monitoring (Sentry), and a small proxy endpoint for Sentry in production. You can run it locally with no environment variables; everything is documented below for reuse and teaching.
+A learning project that recreates an iPhone 15 Pro product showcase with React, 3D graphics, video and scroll animations. It is an independent frontend demo, not an Apple store: it does not sell products or process orders.
 
-- **Live Demo:** [https://iphone15-showcase.vercel.app/](https://iphone15-showcase.vercel.app/)
+- **Intended demo URL:** [https://iphone15-showcase.netlify.app/](https://iphone15-showcase.netlify.app/) (not deployed or confirmed yet)
+- **Security:** private reports → [SECURITY.md](./SECURITY.md) · [contact@arnobmahmud.com](mailto:contact@arnobmahmud.com)
 
 ![Image 1](https://github.com/user-attachments/assets/d57a6315-de97-43ff-9ce0-987a3c065e0a)
 ![Image 2](https://github.com/user-attachments/assets/1e88bb0d-1dc9-4a11-a531-22d14c55315e)
@@ -18,312 +19,217 @@ An interactive, single-page product showcase inspired by the Apple iPhone 15 Pro
 ![Image 4](https://github.com/user-attachments/assets/215a38c3-5c95-416b-8905-8211e8c4cc05)
 ![Image 5](https://github.com/user-attachments/assets/ac0ac722-1d39-4f69-be94-e84014c01c0c)
 
-## Table of Contents
+## Contents
 
-1. [Project Overview](#project-overview)
-2. [Features](#features)
-3. [Technology Stack](#technology-stack)
-4. [Project Structure](#project-structure)
-5. [How to Run](#how-to-run)
-6. [Environment Variables & .env](#environment-variables--env)
-7. [API Endpoints & Routes](#api-endpoints--routes)
-8. [Components & Functionality](#components--functionality)
-9. [Reusing Components in Other Projects](#reusing-components-in-other-projects)
-10. [Libraries & Dependencies](#libraries--dependencies)
-11. [Deployment](#deployment)
-12. [Keywords](#keywords)
-13. [Conclusion](#conclusion)
-14. [License](#license)
+- [What the project does](#what-the-project-does)
+- [Getting started](#getting-started)
+- [Environment and Sentry](#environment-and-sentry)
+- [Architecture and routes](#architecture-and-routes)
+- [Project structure](#project-structure)
+- [Walkthrough and reuse](#walkthrough-and-reuse)
+- [Technology and concepts](#technology-and-concepts)
+- [Deployment and usage](#deployment-and-usage)
+- [Testing and troubleshooting](#testing-and-troubleshooting)
+- [Security](#security)
+- [Keywords](#keywords)
+- [License](#license)
 
 ---
 
-## Project Overview
+## What the project does
 
-**iPhone 15 Showcase** is a frontend-only, educational landing page that demonstrates:
+- Shows a responsive hero video and a **Buy** button that scrolls to the highlights section; it does not start a purchase.
+- Plays four highlight videos in sequence, with progress, pause, play and replay controls.
+- Displays an interactive 3D phone with four color choices and two size views. Drag the model to rotate it.
+- Presents the design and A17 Pro sections with scroll-triggered animations and videos.
+- Uses optional Sentry monitoring for errors, performance and session replay.
 
-- **React 18** with **TypeScript** and **Vite 7** for a fast, type-safe build.
-- **Three.js** (via `@react-three/fiber` and `@react-three/drei`) for an interactive 3D iPhone model with color and size toggles.
-- **GSAP** for scroll-triggered and timeline-based animations (hero, highlights, features, model transitions).
-- **Tailwind CSS** for layout and styling; **Lucide React** for the footer copyright icon.
-- **Sentry** for error tracking and session replay, with an optional tunnel (`/api/monitoring`) so requests are not blocked by ad blockers.
-
-The app is a **single-page application (SPA)**. All content is on one scrollable page; routing is handled by Vercel (or Netlify) rewrites so that every path serves `index.html`. There is no custom REST API for business logic—only the Sentry tunnel endpoint for monitoring.
+The header labels, search and bag icons, film/event text and footer legal labels are visual placeholders, not implemented navigation or shopping features. There are no account, database, checkout, CRUD or multi-page application features. The project is a client-rendered single-page application (SPA), not a Next.js or server-rendered app.
 
 ---
 
-## Features
+## Getting started
 
-| Feature                       | Description                                                                                                                                                                |
-| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **3D iPhone model**           | Interactive GLB model with color (Natural, Blue, White, Black Titanium) and size (6.1" / 6.7") selection. Uses `useGLTF`, `useTexture`, and material updates.              |
-| **GSAP animations**           | Hero and CTA fade-in; highlights title and links; features scroll-triggered text and image scale; model view transitions via timeline; how-it-works chip and text fade-in. |
-| **Video highlights carousel** | Four product videos with play/pause/replay, progress indicators, and slide transition. State-driven with refs for video and progress elements.                             |
-| **Responsive layout**         | Mobile-first layout with Tailwind breakpoints; navbar, hero video, and sections adapt to viewport.                                                                         |
-| **Sentry integration**        | Error tracking, performance traces, and session replay. Events are sent via tunnel `/api/monitoring` so they work even when Sentry’s domain is blocked.                    |
-| **Reusable components**       | Each section is a separate component (Navbar, Hero, Highlights, Model, Features, HowItWorks, Footer) so you can copy or adapt them in other React projects.                |
-
----
-
-## Technology Stack
-
-- **React 18.3** – UI components and hooks.
-- **TypeScript 5.6** – Typed JavaScript; no `any` in app code.
-- **Vite 7** – Dev server, HMR, and production build.
-- **Tailwind CSS 3.4** – Utility-first CSS and theme (e.g. `screen-max-width`, `common-padding`).
-- **Three.js & @react-three/fiber** – 3D scene and React bindings; **@react-three/drei** – helpers (View, OrbitControls, useGLTF, useTexture, Environment, Lightformer).
-- **GSAP 3.12 & @gsap/react** – Animations and ScrollTrigger; `useGSAP` for React-safe tweens.
-- **Sentry (React + Vite plugin)** – Frontend monitoring; optional source map upload when `SENTRY_AUTH_TOKEN` is set.
-- **Lucide React** – Icon set (e.g. `Copyright` in Footer).
-- **ESLint + typescript-eslint** – Linting and type-aware rules.
-
----
-
-## Project Structure
+Install [Node.js 24](https://nodejs.org/) and npm. `.nvmrc` specifies Node 24 for users of nvm; `package.json` selects `24.x` for compatible deployment platforms. Badges show the versions in the lockfile; consult that file for exact resolved versions.
 
 ```bash
-iphone-landing/
-├── .env.example                # Optional env vars template; copy to .env and see comments for learners
-├── index.html                 # Entry HTML; meta tags, preloads, root div, script to main.tsx
-├── package.json               # Scripts (dev, build, lint, preview) and dependencies
-├── tsconfig.json              # TypeScript config for src and vite.config
-├── vite.config.ts             # Alias /assets → public/assets; dev proxy /api/monitoring; Sentry plugin (optional)
-├── vercel.json                # SPA rewrites: all paths → /index.html
-├── netlify.toml               # Netlify build and SPA redirects (if you deploy there)
-├── postcss.config.js          # PostCSS with Tailwind and Autoprefixer
-├── tailwind.config.js         # Tailwind theme (colors, etc.) and content paths
-├── api/
-│   └── monitoring.ts          # Vercel Edge: POST /api/monitoring → forwards to Sentry ingest (tunnel)
-├── public/
-│   ├── vite.svg               # Favicon / app icon
-│   ├── assets/
-│   │   ├── images/            # SVGs (apple, search, bag, etc.), JPEGs/PNGs (hero, colors, chip, frame)
-│   │   └── videos/            # MP4s (hero, smallHero, highlight-*, explore, frame)
-│   └── models/
-│       └── scene.glb          # 3D iPhone model used by IPhone component
-└── src/
-    ├── main.tsx               # Sentry.init (with tunnel), ReactDOM.createRoot, App
-    ├── App.tsx                 # Root layout: Navbar, Hero, Highlights, Model, Features, HowItWorks, Footer (wrapped with Sentry.withProfiler)
-    ├── index.css               # Tailwind directives and custom utility classes
-    ├── vite-env.d.ts           # Vite client types reference
-    ├── constants/
-    │   └── index.ts            # navLists, highlightsSlides, models, sizes, footerLinks; types (HighlightSlide, ModelItem, SizeOption)
-    ├── utils/
-    │   ├── index.ts            # Asset URL strings (images, videos) under /assets/...
-    │   └── animations.ts       # animateWithGsap (scroll-triggered), animateWithGsapTimeline (model view transition)
-    └── components/
-        ├── Navbar.tsx         # Header: logo, nav links, search & bag icons (fixed layout to avoid flicker)
-        ├── Hero.tsx           # Title, responsive hero video, CTA; useGSAP for fade-in
-        ├── Highlights.tsx     # Section heading, links, VideoCarousel
-        ├── VideoCarousel.tsx  # Four videos, progress indicators, play/pause/replay
-        ├── Model.tsx          # 3D section: heading, two ModelViews, color/size controls, Canvas + View.Port
-        ├── ModelView.tsx      # Single 3D viewport: camera, lights, OrbitControls, IPhone (Suspense + Loader)
-        ├── IPhone.tsx         # GLB mesh + dynamic color/texture from ModelItem
-        ├── Lights.tsx         # Environment + Lightformers + spotLights for 3D scene
-        ├── Loader.tsx         # Simple loading fallback for Suspense (3D load)
-        ├── Features.tsx       # Scroll-driven text and images; explore video and copy
-        ├── HowItWorks.tsx     # A17 Pro chip section: image, video, text blocks
-        └── Footer.tsx         # Shop info, divider, copyright (Lucide Copyright icon + year), footer links
+git clone https://github.com/arnobt78/iphone.git
+cd iphone
+nvm use          # if using nvm; install Node 24 first if needed
+npm ci
+npm run dev
+```
+
+Open the local URL printed by Vite. The page works without a `.env` file or Sentry account.
+
+```bash
+npm run lint     # ESLint, warnings treated as errors
+npm test         # Node's test runner: monitoring tunnel checks
+npm run build    # TypeScript check and production build in dist/
+npm run preview  # Serve the built static site locally
+npm audit        # Check known npm dependency advisories
+```
+
+`npm run preview` previews the static build; it does not run Vercel or Netlify functions. Browsers need WebGL to render the 3D model and may apply their own autoplay policies.
+
+---
+
+## Environment and Sentry
+
+All variables are optional. Copy `.env.example` to `.env` only if you want to enable monitoring. Never commit `.env` or put a secret in a `VITE_` variable: Vite exposes those values in the browser bundle.
+
+| Variable                 | Where it is used                       | How to obtain or configure it                                                                                                                                                                                                                                                                    |
+| ------------------------ | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `VITE_SENTRY_DSN`        | Vite client build                      | Create a Sentry project and copy its DSN from project settings / client keys. A DSN is public configuration, not an authentication token.                                                                                                                                                        |
+| `SENTRY_INGEST_URL`      | Server-side Vercel or Netlify function | Use the Sentry envelope endpoint derived from your project's DSN, for example `https://o123.ingest.us.sentry.io/api/456/envelope/`. Configure it in the host's function environment, not the browser.                                                                                            |
+| `VITE_SENTRY_INGEST_URL` | Vite development proxy configuration   | Set the same envelope endpoint in the shell before starting Vite. The Vite config reads `process.env` during startup; putting this variable only in `.env` does not configure the proxy. Restart Vite after changing it.                                                                         |
+| `SENTRY_AUTH_TOKEN`      | Build environment only                 | Create a Sentry token with the permissions needed for source-map upload and store it as a secret in CI or the hosting build environment. The Vite plugin currently specifies the organization `arnob-mahmud` and project `iphone15-showcase`; change those settings for your own Sentry project. |
+
+For example, with a placeholder ingest endpoint:
+
+```bash
+export VITE_SENTRY_INGEST_URL='https://o123.ingest.us.sentry.io/api/456/envelope/'
+npm run dev
+```
+
+Set `VITE_SENTRY_DSN` in `.env` or the build environment as well. The client sends events to `/api/monitoring`. When the server ingest URL is missing, the function returns `204` without forwarding. The tunnel accepts only POST requests and rejects envelopes larger than 5 MiB; this per-request limit is not a rate limit. When enabled, the current Sentry configuration samples all performance traces, 10% of sessions and all sessions with errors; Replay has text masking and media blocking disabled. Review privacy, consent, retention and Sentry usage before enabling it.
+
+On Netlify, set `SENTRY_INGEST_URL` with Functions runtime scope. Netlify's own buffered request limit can reject a large envelope before it reaches the application's 5 MiB limit. Its static header rules do not apply to function responses.
+
+Production builds generate source maps only when `SENTRY_AUTH_TOKEN` is set for Sentry upload. Such builds may still leave the maps in `dist`, where a host could publish them; verify the uploaded artifacts and hosting configuration before deploying with that token.
+
+---
+
+## Architecture and routes
+
+`index.html` loads `src/main.tsx`, which optionally initializes Sentry and mounts `App`. `App` composes the landing-page sections. React state controls the carousel and 3D selections; GSAP handles animations; React Three Fiber renders the Three.js scene. Static images, videos and the model live in `public/` and are served as files.
+
+There is one frontend page at `/`. The hero link uses `/#highlights`; the host's fallback can return the same SPA shell for other paths, but there are no separate app routes. There is no business API or backend database.
+
+The optional `POST /api/monitoring` endpoint forwards a Sentry envelope to the configured upstream URL. `api/monitoring.ts` is the Vercel Edge handler; `netlify/functions/monitoring.ts` reuses it as a Netlify function through the rewrite in `netlify.toml`. GET returns `405`; an unconfigured POST returns `204`; oversized envelopes return `413`. Upstream status and Sentry retry headers are passed back. The tunnel is public, so host-level traffic controls remain relevant.
+
+---
+
+## Project structure
+
+```text
+iphone/
+├── index.html                  # HTML entry, metadata and preloads
+├── package.json                # npm scripts and direct dependencies
+├── package-lock.json           # Exact dependency tree for npm ci
+├── .env.example                # Optional, commented environment examples
+├── .nvmrc                      # Node major version
+├── vite.config.ts              # Vite, dev proxy and optional Sentry build plugin
+├── vercel.json                 # Vercel headers and SPA rewrite
+├── netlify.toml                # Netlify build, headers and rewrites
+├── api/monitoring.ts           # Shared Sentry forwarding handler / Vercel Edge entry
+├── netlify/functions/          # Netlify function adapter
+├── public/assets/              # Product images, SVG icons and MP4 videos
+├── public/models/scene.glb     # 3D phone model
+├── src/
+│   ├── main.tsx, App.tsx       # Initialization and page composition
+│   ├── index.css               # Tailwind directives and shared CSS classes
+│   ├── components/             # Page sections, carousel and 3D scene
+│   ├── constants/index.ts      # Slide, model, size and display data
+│   ├── hooks/useNearbyVideo.ts # Defer lower-page videos near the viewport
+│   └── utils/                  # Asset paths and GSAP helpers
+├── tests/monitoring.test.ts    # Tunnel behavior tests
+└── SECURITY.md                 # Private vulnerability reporting
 ```
 
 ---
 
-## How to Run
+## Walkthrough and reuse
 
-You do **not** need a `.env` file or any environment variables to run the app locally. Optional env is documented in the next section.
+| Files                                              | What happens                                                                                                                             | Reuse considerations                                                                                                                                   |
+| -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `Navbar`, `Hero`                                   | Displays the header and selects a hero video for the viewport width.                                                                     | Copy the images, videos, CSS utilities and asset paths too. Replace placeholder header items with real links only when destinations exist.             |
+| `Highlights`, `VideoCarousel`                      | Reads slide content from `constants`, loads videos as slides are reached, advances on video end and tracks progress using refs and GSAP. | Copy the slide data, media, controls, styles and animation dependencies together. Durations in the slide data control progress animation.              |
+| `Model`, `ModelView`, `IPhone`, `Lights`, `Loader` | Creates two 3D views, changes model material/texture, and rotates the selected view.                                                     | The component depends on the specific GLB mesh names, textures, Three.js, Fiber and Drei. A different model needs corresponding mesh/material changes. |
+| `Features`, `HowItWorks`, `useNearbyVideo`         | Animates the product sections and attaches their video sources shortly before they enter the viewport.                                   | Include the hook and CSS. Browsers without `IntersectionObserver` use the hook's fallback.                                                             |
+| `Footer`                                           | Renders store information, current year and labels.                                                                                      | Replace the sample contact and placeholder labels for your site.                                                                                       |
+| `utils/animations.ts`                              | Shares GSAP scroll and timeline helpers.                                                                                                 | Targets must exist in the DOM, and GSAP ScrollTrigger must be registered.                                                                              |
 
-1. **Clone the repository**
-
-   ```bash
-   git clone <your-repo-url>
-   cd iphone-landing
-   ```
-
-2. **Install dependencies**
-
-   ```bash
-   npm install
-   ```
-
-3. **Start the development server**
-
-   ```bash
-   npm run dev
-   ```
-
-   Then open the URL shown in the terminal (e.g. `http://localhost:5173`).
-
-4. **Lint**
-
-   ```bash
-   npm run lint
-   ```
-
-   Uses ESLint with TypeScript and `--max-warnings 0`.
-
-5. **Build for production**
-
-   ```bash
-   npm run build
-   ```
-
-   Output is in `dist/`. To preview:
-
-   ```bash
-   npm run preview
-   ```
-
----
-
-## Environment Variables & .env
-
-- **To run the app (dev or build):** No `.env` or environment variables are required. Sentry is **off** by default; the app runs without any monitoring.
-
-- **Template for optional variables:** The repo includes a **`.env.example`** file with commented descriptions of every optional variable. Use it as a reference or copy it to create your own `.env` when you need one:
-
-  ```bash
-  cp .env.example .env
-  ```
-
-  Then edit `.env` and uncomment only the lines you need. **Do not commit `.env`** (it is listed in `.gitignore`). Learners can read `.env.example` to see what each variable does and where to get the values.
-
-- **Optional – Enable Sentry (when you have your own project)**  
-  The Sentry setup is ready but inactive until you set:
-  - **`VITE_SENTRY_DSN`** – Your Sentry DSN (e.g. `https://key@org.ingest.sentry.io/projectId`). When set, the client initializes Sentry and uses the tunnel `/api/monitoring`.
-  - **`SENTRY_INGEST_URL`** – (Production) In Vercel (or your host), set this to your envelope URL (e.g. `https://org.ingest.sentry.io/api/projectId/envelope/`) so `api/monitoring.ts` can forward events. If unset, the tunnel returns 204 and no request is sent to Sentry.
-  - **`VITE_SENTRY_INGEST_URL`** – (Development) Same envelope URL; when set, Vite’s proxy forwards `/api/monitoring` to it in dev.
-  - **`SENTRY_AUTH_TOKEN`** – (Build) For the Sentry Vite plugin to upload source maps; only used when running `npm run build`.
-
-  You do **not** need to add any of these to use or deploy this project; they are only for when you want to turn on Sentry with your own project. See **`.env.example`** for copy-paste templates and instructions.
-
----
-
-## API Endpoints & Routes
-
-- **Frontend:** The app is a single-page application. There are no frontend “routes” in the code; everything is one page. For deployment, **Vercel** (and optionally Netlify) rewrite all requests to `index.html` so refreshes and direct URLs work.
-
-- **Backend / API:** There is no business-logic backend. The only “API” is:
-  - **`POST /api/monitoring`**  
-    Implemented in `api/monitoring.ts` (Vercel Edge). When `SENTRY_INGEST_URL` is set, the handler forwards Sentry envelopes to your ingest URL (tunnel so ad blockers don’t block `*.sentry.io`). If `SENTRY_INGEST_URL` is not set, it returns 204. The client only initializes Sentry when `VITE_SENTRY_DSN` is set; otherwise no events are sent.
-
----
-
-## Components & Functionality
-
-| Component         | Role                                                                        | Main ideas for learners                                                                                                                               |
-| ----------------- | --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Navbar**        | Top bar: logo, nav labels, search/bag icons.                                | Fixed-size wrappers and preloaded images prevent layout shift on load.                                                                                |
-| **Hero**          | Headline, hero video (responsive src), CTA.                                 | `useState` for video source by width; `useEffect` for resize listener; `useGSAP` for opacity/y animations.                                            |
-| **Highlights**    | Section title, “Watch the film/event” links, carousel.                      | `useGSAP` for title and link stagger; delegates to VideoCarousel.                                                                                     |
-| **VideoCarousel** | Four slides: video + text; progress bars; play/pause/replay.                | Refs for video elements and progress spans; GSAP for slide position and progress width; state for `videoId`, `isPlaying`, `isLastVideo`, etc.         |
-| **Model**         | “Take a closer look”: two 3D views (small/large), color dots, size buttons. | `useRef` for camera controls and THREE.Group refs; GSAP timeline in `useEffect` when `size` changes; `animateWithGsapTimeline` swaps view visibility. |
-| **ModelView**     | One 3D viewport: camera, lights, OrbitControls, IPhone.                     | Drei `View` for viewport; `OrbitControls` ref to read azimuth for state sync; `Suspense` + Loader around IPhone.                                      |
-| **IPhone**        | Renders GLB meshes; applies `ModelItem` color and texture.                  | `useGLTF` for scene; `useTexture` for item image; `useEffect` to set material colors (excluding screen/glass keys).                                   |
-| **Lights**        | Environment map + Lightformers + spotLights.                                | Drei `Environment` and `Lightformer`; Three.js `spotLight` for key lights.                                                                            |
-| **Loader**        | Shown while 3D model loads.                                                 | Drei `Html` with a simple “Loading…” block.                                                                                                           |
-| **Features**      | “Explore the full story”: headings, video, two images, two text blocks.     | `animateWithGsap` with ScrollTrigger for heading and `.g_grow` / `.g_text`; ref for video play on complete.                                           |
-| **HowItWorks**    | A17 Pro chip: image, video frame, copy.                                     | `gsap.from` for chip; `animateWithGsap` for `.g_fadeIn` text.                                                                                         |
-| **Footer**        | Shop text, divider, copyright (icon + year), legal links.                   | Lucide `Copyright`; `new Date().getFullYear()`; list from `footerLinks`.                                                                              |
-
-Data flow: **constants** (nav, slides, models, sizes, footer links) and **utils** (asset URLs, animation helpers) are imported where needed. No global state library; local `useState`/`useRef` per component.
-
----
-
-## Reusing Components in Other Projects
-
-Each section is a self-contained component. To reuse:
-
-1. Copy the component file(s) you need (e.g. `Navbar.tsx`, `Hero.tsx`).
-2. Copy any dependencies:
-   - **Constants:** from `constants/index.ts` (and the types if you use TypeScript).
-   - **Utils:** from `utils/index.ts` (asset paths) and `utils/animations.ts` if you use GSAP helpers.
-   - **Assets:** ensure the same paths exist in your `public/` (or adjust the URLs in utils).
-3. Install the same libraries (React, GSAP, Tailwind, Three/drei/fiber if you use 3D).
-4. Compose in your app, e.g.:
-
-```tsx
-import Navbar from "./components/Navbar";
-import Hero from "./components/Hero";
-
-function App() {
-  return (
-    <main>
-      <Navbar />
-      <Hero />
-      {/* ... */}
-    </main>
-  );
-}
-```
-
-- **Navbar:** Expects `appleImg`, `searchImg`, `bagImg` and `navLists` (from utils/constants). Replace with your own assets/links if needed.
-- **Hero:** Uses `heroVideo`, `smallHeroVideo` from utils; swap for your video URLs.
-- **Model + ModelView + IPhone:** Require `public/models/scene.glb` and the `models`/`sizes` constants; IPhone expects a `ModelItem` with `color` and `img`. You can reuse the same GLB or point to another model and adjust types.
-- **Footer:** Uses `footerLinks` and Lucide `Copyright`; change links and copy as needed.
-
----
-
-## Libraries & Dependencies
-
-| Package                        | Purpose                                                                                          |
-| ------------------------------ | ------------------------------------------------------------------------------------------------ |
-| **react / react-dom**          | Component model and DOM rendering.                                                               |
-| **@gsap/react**                | `useGSAP` hook so GSAP tweens/ScrollTrigger are cleaned up when the component unmounts.          |
-| **gsap**                       | Animations; `gsap.to`, `gsap.from`, `gsap.timeline`, ScrollTrigger for scroll-linked animations. |
-| **three**                      | 3D library: scene, meshes, materials, lights.                                                    |
-| **@react-three/fiber**         | Renders Three.js as React components (e.g. `<mesh>`, `<ambientLight>`).                          |
-| **@react-three/drei**          | Helpers: `View`, `OrbitControls`, `useGLTF`, `useTexture`, `Environment`, `Lightformer`, `Html`. |
-| **@sentry/react**              | Error capture, performance traces, session replay; `Sentry.init`, `Sentry.withProfiler`.         |
-| **lucide-react**               | Icon components (e.g. `Copyright`).                                                              |
-| **vite**                       | Dev server and production bundler.                                                               |
-| **@vitejs/plugin-react**       | React Fast Refresh and JSX transform for Vite.                                                   |
-| **tailwindcss**                | Utility CSS and theme.                                                                           |
-| **typescript**                 | Type checking and TS support in the build.                                                       |
-| **typescript-eslint / eslint** | Linting with TypeScript-aware rules.                                                             |
-
-Example of how GSAP is used with ScrollTrigger:
+For example, the features section uses the shared animation helper:
 
 ```ts
-// utils/animations.ts – scroll-triggered tween
 animateWithGsap("#features_title", { y: 0, opacity: 1 });
-// When #features_title enters view (top 85%), it animates from current state to y:0, opacity:1.
 ```
+
+The helper creates a ScrollTrigger tween for the matching element. To reuse a component in another React app, install its dependencies, copy its imports and supporting CSS/assets, and update paths and content. Review the rights to third-party assets separately before reuse.
 
 ---
 
-## Deployment
+## Technology and concepts
 
-- **Vercel (recommended):** Connect the repo to Vercel. Build command: `npm run build`. Output directory: `dist`. Root directory: project root. `vercel.json` already contains the SPA rewrite; no extra config needed. The `api/` folder is deployed as Vercel Edge functions, so `POST /api/monitoring` works in production.
+| Technology                             | What it contributes                                                                   |
+| -------------------------------------- | ------------------------------------------------------------------------------------- |
+| React and React DOM                    | Components, local state and browser rendering.                                        |
+| TypeScript                             | Types for component props and data, checked during the build.                         |
+| Vite and its React plugin              | Development server, React refresh and optimized production bundle.                    |
+| Tailwind CSS, PostCSS and Autoprefixer | Utility classes, shared styles and CSS processing.                                    |
+| Three.js, React Three Fiber and Drei   | WebGL scene, React integration, model loading, controls, camera and lighting helpers. |
+| GSAP and `@gsap/react`                 | Timelines, scroll-triggered animations and React integration.                         |
+| Sentry React and Vite plugin           | Optional client monitoring and optional source-map upload.                            |
+| Lucide React                           | SVG icon components.                                                                  |
+| ESLint and typescript-eslint           | Static lint checks for JavaScript and TypeScript.                                     |
 
-- **Netlify:** Use `netlify.toml` (build command and publish directory). Add a redirect so all paths serve `index.html` (same idea as Vercel rewrites). Note: `api/monitoring` is a Vercel Edge function; on Netlify you would need a Netlify Function or similar if you want to keep the Sentry tunnel.
+A **component** is a reusable UI function; **state** holds changing UI choices; a **ref** points to an element or 3D object without itself triggering a render. A **GLB** is a binary 3D model file. A **tunnel** is a server endpoint that forwards monitoring envelopes. A **SPA fallback** serves the same entry page for paths that do not match static files.
+
+---
+
+## Deployment and usage
+
+For Netlify, the repository specifies build command `npm run build`, publish directory `dist`, a monitoring function rewrite, security headers and a fallback to `index.html`. Select Node 24 and set optional Sentry variables only if needed. Preview and test the function and site before assigning a production domain. A local `npm run preview` alone does not verify Netlify functions.
+
+To deploy from a Git connection, commit and push the intended changes first, then select the branch containing them in Netlify. A manual CLI deploy can include the function from the working tree: run `npx netlify-cli login`, then `npx netlify-cli deploy --build` from the project folder for a preview. After checking it, use `npx netlify-cli deploy --prod --build` for production. Choose the intended team when prompted. Uploading only `dist/` does not include the source function.
+
+For Vercel, `vercel.json` configures security headers and the SPA fallback, and the `api/` directory provides the optional Edge handler. Check actual deployment settings and runtime logs when troubleshooting.
+
+Both platforms meter traffic. Large videos can consume substantial bandwidth, and the exact cause of the previous Vercel transfer spike is not established. Inspect requests by path, bytes and source, and monitor usage after deployment. Netlify's Free plan also has a team-wide credit limit; verify current plan terms before putting this demo alongside important projects. A separate team can limit the impact on other sites, subject to the account's plan and rules.
+
+The canonical and social-image URLs in `index.html` use the intended Netlify address. Confirm that address after deployment and update them if Netlify assigns a different URL. Static SPA rewrites do not provide a monitoring function unless the host supports the configured adapter.
+
+---
+
+## Testing and troubleshooting
+
+- **Blank 3D scene:** Check WebGL support, browser console and that `/models/scene.glb` and the texture images load. Test on a real device as well as emulation.
+- **Videos do not play:** Check network requests, browser autoplay policy and video codec support. Lower-page videos and carousel slides load on demand.
+- **Sentry event missing:** Confirm the DSN was present at build time, the correct host function has `SENTRY_INGEST_URL`, and the tunnel response is not `204` because the upstream is unset. Inspect host logs without exposing tokens or event contents. Test with a safe event in your own Sentry project.
+- **Build or install fails:** Confirm `node -v` is 24.x, run `npm ci`, then rerun lint, tests and build. Keep `package-lock.json` with the manifest.
+- **High transfer:** Inspect host usage and request-level data before assigning a cause. CDN caching can improve latency and origin usage, but data delivered to visitors can still count against bandwidth quotas.
+
+Automated tests currently focus on the tunnel. Browser behavior, third-party services, host configuration and physical-device compatibility require additional verification; a clean audit or build is not proof of complete security or production readiness.
+
+---
+
+## Security
+
+Please report vulnerabilities privately using the instructions in [SECURITY.md](SECURITY.md). Avoid publishing sensitive details or real credentials in issues.
 
 ---
 
 ## Keywords
 
-iPhone 15 Showcase, Apple iPhone 15 Pro Max, React, Vite, TypeScript, Three.js, GSAP, Tailwind CSS, 3D model, product landing page, SPA, @react-three/fiber, @react-three/drei, Sentry, Vercel, error monitoring, scroll animation, interactive demo, educational project, Arnob Mahmud.
+React, TypeScript, Vite, SPA, Tailwind CSS, Three.js, React Three Fiber, Drei, WebGL, GLB, GSAP, ScrollTrigger, responsive design, video loading, Sentry, Netlify, Vercel.
 
 ---
 
 ## Conclusion
 
-This repository is a **learning-oriented** frontend project: a single-page iPhone 15–style showcase with 3D, animations, and monitoring. You can run it without any `.env`, reuse individual components in other React apps, and use it as a reference for React + TypeScript, Vite, Three.js, and GSAP. There is no backend or database; the only “API” is the optional Sentry tunnel for production monitoring.
+This project demonstrates how to combine a React page, 3D model, animation and optional monitoring in a single showcase. Adapt its components, assets and deployment settings to your own requirements and verify them in the environment where they will run.
 
 ---
 
 ## License
 
-This project is licensed under the [MIT License](https://opensource.org/licenses/MIT). Feel free to use, modify, and distribute the code as per the terms of the license.
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT). Feel free to use, modify, and distribute the code as per the terms of the license. The bundled 3D model has its own attribution and license information in `src/components/IPhone.tsx`; check the rights for all third-party assets separately.
 
 ---
 
 ## Happy Coding! 🎉
 
-This is an **open-source project** — feel free to use, enhance, and extend it further!
+This is an **open-source project** - feel free to use, enhance, and extend this project further!
 
 If you have any questions or want to share your work, reach out via GitHub or my portfolio at [https://www.arnobmahmud.com](https://www.arnobmahmud.com).
-
-**Enjoy building and learning!** 🚀
-
-Thank you! 😊
-
----

@@ -14,7 +14,6 @@ function Navbar(): React.ReactElement {
             width={14}
             height={18}
             className="w-[14px] h-[18px] object-contain block"
-            fetchPriority="high"
           />
         </span>
 
@@ -39,7 +38,6 @@ function Navbar(): React.ReactElement {
               width={18}
               height={18}
               className="w-[18px] h-[18px] object-contain block"
-              fetchPriority="high"
             />
           </span>
           <span className="flex w-[18px] h-[18px] min-w-[18px] min-h-[18px] items-center justify-center">
@@ -49,7 +47,6 @@ function Navbar(): React.ReactElement {
               width={18}
               height={18}
               className="w-[18px] h-[18px] object-contain block"
-              fetchPriority="high"
             />
           </span>
         </div>

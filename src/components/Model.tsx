@@ -114,21 +114,27 @@ function Model(): React.ReactElement {
 
             <div className="flex-center">
               <ul className="color-container">
-                {models.map((item, i) => (
-                  <li
-                    key={i}
-                    className="w-6 h-6 rounded-full mx-2 cursor-pointer"
-                    style={{ backgroundColor: item.color[0] }}
-                    onClick={() => setModel(item)}
-                  />
+                {models.map((item) => (
+                  <li key={item.id}>
+                    <button
+                      type="button"
+                      className="block w-6 h-6 rounded-full mx-2 cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                      style={{ backgroundColor: item.color[0] }}
+                      aria-label={item.title}
+                      aria-pressed={model.id === item.id}
+                      onClick={() => setModel(item)}
+                    />
+                  </li>
                 ))}
               </ul>
 
-              <button type="button" className="size-btn-container">
+              <div className="size-btn-container" role="group" aria-label="iPhone size">
                 {sizes.map(({ label, value }) => (
-                  <span
+                  <button
+                    type="button"
                     key={label}
-                    className="size-btn"
+                    className="size-btn focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                    aria-pressed={size === value}
                     style={{
                       backgroundColor:
                         size === value ? "white" : "transparent",
@@ -137,9 +143,9 @@ function Model(): React.ReactElement {
                     onClick={() => setSize(value)}
                   >
                     {label}
-                  </span>
+                  </button>
                 ))}
-              </button>
+              </div>
             </div>
           </div>
         </div>

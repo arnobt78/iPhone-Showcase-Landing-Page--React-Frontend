@@ -3,8 +3,22 @@
   publish = "dist"
   command = "npm run build"
 
-# Redirect all requests to index.html for client-side routing
+# Route monitoring before the SPA fallback.
+[[redirects]]
+  from = "/api/monitoring"
+  to = "/.netlify/functions/monitoring"
+  status = 200
+
+# Redirect remaining requests to index.html for client-side routing
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), geolocation=()"

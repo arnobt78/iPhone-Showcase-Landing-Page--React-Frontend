@@ -62,11 +62,11 @@ canvas {
   }
 
   .section-heading {
-    @apply text-gray lg:text-6xl md:text-5xl text-3xl lg:mb-0 mb-5 font-medium opacity-0 translate-y-20
+    @apply text-gray lg:text-6xl md:text-5xl text-3xl lg:mb-0 mb-5 font-medium
   }
 
   .feature-text {
-    @apply text-gray max-w-md text-lg md:text-xl font-semibold opacity-0 translate-y-[100px]
+    @apply text-gray max-w-md text-lg md:text-xl font-semibold
   }
 
   .feature-text-container {
@@ -74,7 +74,7 @@ canvas {
   }
 
   .feature-video {
-    @apply w-full h-full object-cover object-center scale-150 opacity-0
+    @apply w-full h-full object-cover object-center
   }
 
   .feature-video-container {
@@ -82,7 +82,7 @@ canvas {
   }
 
   .link {
-    @apply text-blue hover:underline cursor-pointer flex items-center text-xl opacity-0 translate-y-20
+    @apply text-blue hover:underline cursor-pointer flex items-center text-xl
   }
 
   .control-btn {
@@ -90,7 +90,7 @@ canvas {
   }
 
   .hero-title {
-    @apply text-center font-semibold text-3xl text-gray-100 opacity-0 max-md:mb-10
+    @apply text-center font-semibold text-3xl text-gray-100 max-md:mb-10
   }
 
   .hiw-title {
@@ -121,7 +121,4 @@ canvas {
     @apply relative sm:w-[70vw] w-[88vw] md:h-[70vh] sm:h-[50vh] h-[35vh]
   }
 
-  .g_fadeIn {
-    @apply opacity-0 translate-y-[100px]
-  }
 }

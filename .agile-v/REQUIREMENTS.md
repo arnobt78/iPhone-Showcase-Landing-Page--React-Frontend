@@ -11,3 +11,10 @@
 - REQ-0009: Prevent the chip animation from widening the viewport while preserving the animation.
 - REQ-0010: Omit production source maps when Sentry upload is not enabled, while retaining them for configured uploads.
 - REQ-0011: Publish the user-requested project instructions and license change, reconcile affected documentation with the Vite SPA, and retain only the main and reusable preview branches after verification.
+
+## C2 motion requirements
+
+- REQ-0012 [new C2]: Loop the hero video while visible, with an accessible reduced-motion and autoplay-failure fallback.
+- REQ-0013 [new C2]: Slowly rotate the active phone view while visible; preserve manual orbit and the viewing angle across size changes.
+- REQ-0014 [new C2]: Provide coordinated, repeatable section and text reveals without hiding content when motion is disabled.
+- REQ-0015 [new C2]: Pause nonessential video and rotation while offscreen or hidden, preserving carousel playback controls.

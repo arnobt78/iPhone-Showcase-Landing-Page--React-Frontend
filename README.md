@@ -38,10 +38,10 @@ A learning project that recreates an iPhone 15 Pro product showcase with React, 
 
 ## What the project does
 
-- Shows a responsive hero video and a **Buy** button that scrolls to the highlights section; it does not start a purchase.
+- Loops a responsive hero video while it is visible and provides a **Buy** button that scrolls to the highlights section; it does not start a purchase.
 - Plays four highlight videos in sequence, with progress, pause, play and replay controls.
-- Displays an interactive 3D phone with four color choices and two size views. Drag the model to rotate it.
-- Presents the design and A17 Pro sections with scroll-triggered animations and videos.
+- Displays an interactive 3D phone with four color choices and two size views. It rotates slowly while visible; drag to control it.
+- Replays section and text entrances on scroll, pauses offscreen video, and respects reduced-motion preferences.
 - Uses optional Sentry monitoring for errors, performance and session replay.
 
 The header labels, search and bag icons, film/event text and footer legal labels are visual placeholders, not implemented navigation or shopping features. There are no account, database, checkout, CRUD or multi-page application features. The project is a client-rendered single-page application (SPA), not a Next.js or server-rendered app.
@@ -131,7 +131,7 @@ iphone/
 │   ├── index.css               # Tailwind directives and shared CSS classes
 │   ├── components/             # Page sections, carousel and 3D scene
 │   ├── constants/index.ts      # Slide, model, size and display data
-│   ├── hooks/useNearbyVideo.ts # Defer lower-page videos near the viewport
+│   ├── hooks/                  # Scroll motion and viewport-aware video playback
 │   └── utils/                  # Asset paths and GSAP helpers
 ├── tests/monitoring.test.ts    # Tunnel behavior tests
 ├── docs/                       # Agile V protocol and engineering playbook
@@ -151,13 +151,7 @@ iphone/
 | `Footer`                                           | Renders store information, current year and labels.                                                                                      | Replace the sample contact and placeholder labels for your site.                                                                                       |
 | `utils/animations.ts`                              | Shares GSAP scroll and timeline helpers.                                                                                                 | Targets must exist in the DOM, and GSAP ScrollTrigger must be registered.                                                                              |
 
-For example, the features section uses the shared animation helper:
-
-```ts
-animateWithGsap("#features_title", { y: 0, opacity: 1 });
-```
-
-The helper creates a ScrollTrigger tween for the matching element. To reuse a component in another React app, install its dependencies, copy its imports and supporting CSS/assets, and update paths and content. Review the rights to third-party assets separately before reuse.
+The `usePageMotion` hook uses `data-motion` and `data-motion-item` attributes for replayable section and staggered text entrances. It keeps content visible when reduced motion is requested. To reuse a component in another React app, install its dependencies, copy its imports and supporting CSS/assets, and update paths and content. Review the rights to third-party assets separately before reuse.
 
 ---
 

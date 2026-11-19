@@ -1,14 +1,14 @@
-import gsap from "gsap";
-import { useGSAP } from "@gsap/react";
-import { heroVideo, smallHeroVideo } from "../utils";
-import { useEffect, useState } from "react";
+import { heroImg, heroVideo, smallHeroVideo } from "../utils";
+import { useEffect, useRef, useState } from "react";
 
-/** Hero: title, responsive hero video (small vs full), CTA. useGSAP runs once on mount for fade-in. */
+/** Responsive hero video loops only while visible and motion is allowed. */
 function Hero(): React.ReactElement {
   // Pick video by viewport: smallHero for narrow (e.g. mobile), hero for desktop
   const [videoSrc, setVideoSrc] = useState<string>(
     window.innerWidth < 760 ? smallHeroVideo : heroVideo
   );
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [showPoster, setShowPoster] = useState(false);
 
   const handleVideoSrcSet = (): void => {
     if (window.innerWidth < 760) {
@@ -25,24 +25,55 @@ function Hero(): React.ReactElement {
     };
   }, []);
 
-  // Entrance: title and CTA fade in after 2s (no scroll trigger)
-  useGSAP(() => {
-    gsap.to("#hero", { opacity: 1, delay: 2 });
-    gsap.to("#cta", { opacity: 1, y: -50, delay: 2 });
-  }, []);
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let visible = false;
+    let disposed = false;
+    const update = (): void => {
+      if (visible && !document.hidden && !preference.matches) {
+        void video.play().catch((error: unknown) => {
+          if (!disposed && visible && !document.hidden && !preference.matches &&
+              !(error instanceof DOMException && error.name === "AbortError")) setShowPoster(true);
+        });
+      } else {
+        video.pause();
+        if (preference.matches) setShowPoster(true);
+      }
+    };
+    const observer = "IntersectionObserver" in window ? new IntersectionObserver(([entry]) => {
+      visible = Boolean(entry?.isIntersecting);
+      update();
+    }, { threshold: 0.1 }) : null;
+    if (observer) observer.observe(video);
+    else { visible = true; update(); }
+    preference.addEventListener("change", update);
+    document.addEventListener("visibilitychange", update);
+    return () => {
+      disposed = true;
+      observer?.disconnect();
+      preference.removeEventListener("change", update);
+      document.removeEventListener("visibilitychange", update);
+    };
+  }, [videoSrc]);
 
   return (
     <section className="w-full nav-height bg-black relative">
       <div className="h-5/6 w-full flex-center flex-col">
-        <p id="hero" className="hero-title">
+        <p id="hero" className="hero-title" data-motion="down">
           iPhone 15 Pro
         </p>
         <div className="md:w-10/12 w-9/12">
           <video
             className="pointer-events-none"
-            autoPlay
+            ref={videoRef}
             muted
             playsInline
+            loop
+            poster={showPoster ? heroImg : undefined}
+            onError={() => setShowPoster(true)}
+            style={{ width: "100%", aspectRatio: videoSrc === smallHeroVideo ? "752 / 920" : "10 / 3" }}
             key={videoSrc}
           >
             <source src={videoSrc} type="video/mp4" />
@@ -52,12 +83,13 @@ function Hero(): React.ReactElement {
 
       <div
         id="cta"
-        className="flex flex-col items-center opacity-0 translate-y-20"
+        className="flex flex-col items-center"
+        data-motion="up"
       >
-        <a href="#highlights" className="btn">
+        <a href="#highlights" className="btn" data-motion-item>
           Buy
         </a>
-        <p className="font-normal text-xl">From $199/month or $999</p>
+        <p className="font-normal text-xl" data-motion-item>From $199/month or $999</p>
       </div>
     </section>
   );

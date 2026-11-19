@@ -1,9 +1,9 @@
 ---
-eval_run_id: ER-C1-20261119-LOCAL
+eval_run_id: ER-C2-20261119-LOCAL
 eval_timestamp: 2026-11-18T18:12:22Z
 policy_version_ref: N/A
 eval_gate_status: PASS
-eval_gate_rationale: "PASS applies only to the local checks listed below; external deployment and physical-device checks are unverified. This does not grant release or deployment approval."
+eval_gate_rationale: "PASS applies to the C2 local checks below; live deployment and physical-device checks remain unverified."
 thresholds:
   local_tunnel_tests: "3 of 3 pass"
   local_browser_checks: "All scenarios listed as PASS below succeed without uncaught JavaScript exceptions or same-origin HTTP errors."
@@ -21,3 +21,12 @@ thresholds:
 | External and device coverage | REQ-0001, REQ-0003, REQ-0007, REQ-0010 | UNVERIFIED | Live Vercel traffic/firewall, deployed Vercel and Netlify routing, real Sentry ingestion and upload, physical devices, Safari/iOS, and assistive technology were not verified by this run. No waiver is claimed. |
 
 The local browser checks used headless Chromium with software WebGL and Vite; they are not a production-readiness or cross-browser guarantee. Independent verification was performed without modifying implementation files.
+
+## C2 motion verification
+
+| Scope | Requirements | Result | Evidence and limits |
+| --- | --- | --- | --- |
+| Hero, motion and media | REQ-0012, REQ-0014, REQ-0015 | PASS | Independent headless Chromium checked looping, autoplay fallback, viewport pause, reduced motion and section re-entry. |
+| 3D phone and carousel | REQ-0013, REQ-0015 | PASS | Independent desktop/mobile emulation checked drag and camera-angle preservation, carousel pause/resume and manual pause persistence. |
+| Automation and security | REQ-0012 through REQ-0015 | PASS WITH WARNINGS | Node 24.22.3 lint, three tunnel tests, build and npm audit passed. Independent review found no confirmed critical/high findings; optional Sentry privacy and request-volume limitations remain. |
+| Deployment and devices | REQ-0012 through REQ-0015 | UNVERIFIED | Netlify URL returned HTTP 404; Safari/iOS, physical devices and actual background suspension were not tested. |

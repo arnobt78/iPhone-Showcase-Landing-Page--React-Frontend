@@ -7,32 +7,38 @@ import Lights from "./Lights";
 import Loader from "./Loader";
 import IPhone from "./IPhone";
 
-/** Ref handle for orbit controls (getAzimuthalAngle used to sync rotation state) */
+/** The two cameras share their orbit angles when switching model sizes. */
 export interface OrbitControlsRef {
   getAzimuthalAngle: () => number;
+  getPolarAngle: () => number;
+  setAzimuthalAngle: (angle: number) => void;
+  setPolarAngle: (angle: number) => void;
+  enableDamping: boolean;
 }
 
 export interface ModelViewProps {
   index: number;
-  groupRef: RefObject<THREE.Group>;
   gsapType: string;
   controlRef: RefObject<OrbitControlsRef | null>;
-  setRotationState: (angle: number) => void;
   size: "small" | "large";
   item: ModelItem;
+  autoRotate: boolean;
+  onInteractionStart: () => void;
+  onInteractionEnd: () => void;
 }
 
 /**
- * One 3D viewport (view1 or view2). View has id for GSAP; groupRef is the THREE.Group we animate in Model. onEnd saves rotation for timeline sync.
+ * One 3D viewport (view1 or view2), with its own camera and orbit controls.
  */
 function ModelView({
   index,
-  groupRef,
   gsapType,
   controlRef,
-  setRotationState,
   size,
   item,
+  autoRotate,
+  onInteractionStart,
+  onInteractionEnd,
 }: ModelViewProps): React.ReactElement {
   return (
     <View
@@ -49,14 +55,13 @@ function ModelView({
         enableZoom={false}
         enablePan={false}
         rotateSpeed={0.4}
+        autoRotate={autoRotate}
+        autoRotateSpeed={0.7}
         target={new THREE.Vector3(0, 0, 0)}
-        onEnd={() =>
-          controlRef.current &&
-          setRotationState(controlRef.current.getAzimuthalAngle())
-        }
+        onStart={onInteractionStart}
+        onEnd={onInteractionEnd}
       />
       <group
-        ref={groupRef}
         name={index === 1 ? "small" : "large"}
         position={[0, 0, 0]}
       >

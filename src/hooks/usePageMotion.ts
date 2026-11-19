@@ -44,8 +44,10 @@ export function usePageMotion(): React.RefObject<HTMLElement> {
         if (initiallyVisible) tween.progress(1);
         if (observeViewport) {
           // Intersection remains reliable when late-loading content shifts the page height.
-          const observer = new IntersectionObserver(([entry]) => {
-            if (entry?.isIntersecting) tween.play();
+          const observer = new IntersectionObserver((entries) => {
+            const entry = entries[entries.length - 1];
+            if (!entry) return;
+            if (entry.isIntersecting) tween.play();
             else tween.reverse();
           });
           observer.observe(element);

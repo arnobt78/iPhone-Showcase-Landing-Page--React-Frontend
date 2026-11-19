@@ -43,4 +43,5 @@ The local browser checks used headless Chromium with software WebGL and Vite; th
 ## Footer motion verification
 
 - Scoped evaluation ER-FOOTER-20261120-LOCAL: PASS for REQ-0014 and REQ-0017. Independent Chromium checks verified entrance and replay at 320, 390 and 1440 px, reduced motion and the missing-IntersectionObserver fallback without observed page errors or horizontal overflow. Node 26.13.1 lint, three existing tests, production build and npm audit passed.
+- PR review identified queued viewport observations; the handler now uses the latest observation. A local Chromium regression check passed both outside-to-inside and inside-to-outside batches; lint, tests and build passed again.
 - Local verification does not establish Safari/iOS, physical-device, live deployment or Sentry ingestion behavior. The affected change is presentation-only; local review found no new security-sensitive data flow.

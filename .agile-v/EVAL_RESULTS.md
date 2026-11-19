@@ -39,3 +39,8 @@ The local browser checks used headless Chromium with software WebGL and Vite; th
 | Motion and anchors | REQ-0017, REQ-0018 | PASS | Independent Chromium desktop/mobile and reduced-motion checks covered scrolling, hero, carousel, 3D controls, direct links, refresh and history restoration. |
 | Metadata and security | REQ-0019 | PASS WITH WARNINGS | Local metadata matches the Vercel address. No confirmed critical/high issue in independent review; optional Sentry privacy, public tunnel volume and source-map risks remain. |
 | External coverage | REQ-0016 through REQ-0019 | UNVERIFIED | Live deployment, WAF behavior, physical devices, Safari/iOS and real Sentry were not tested. |
+
+## Footer motion verification
+
+- Scoped evaluation ER-FOOTER-20261120-LOCAL: PASS for REQ-0014 and REQ-0017. Independent Chromium checks verified entrance and replay at 320, 390 and 1440 px, reduced motion and the missing-IntersectionObserver fallback without observed page errors or horizontal overflow. Node 26.13.1 lint, three existing tests, production build and npm audit passed.
+- Local verification does not establish Safari/iOS, physical-device, live deployment or Sentry ingestion behavior. The affected change is presentation-only; local review found no new security-sensitive data flow.

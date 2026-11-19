@@ -5,3 +5,4 @@
 - C2 Gate 1: User approved the motion implementation plan with “Please implement the plan.” Resume token: C2-MOTION-20261119.
 - C2 Gate 2: User requested verification, security review, push, PR and squash merge after satisfactory checks. Resume token: C2-REVIEW-20261119.
 - C3 Gates 1 and 2: User approved the Node 26, animation and anchor plans, then requested verification, security review, push, PR and squash merge. Resume token: C3-REVIEW-20261119.
+- Footer Gates 1 and 2: User approved the footer plan and requested verification, push, PR and squash merge. Resume token: FOOTER-20261120.

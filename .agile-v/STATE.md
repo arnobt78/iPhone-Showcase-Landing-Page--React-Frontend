@@ -1,11 +1,17 @@
 # Current state
 
+## Footer motion fix
+
+- User approved a scoped fix under REQ-0014 and REQ-0017. The footer rows now share a staggered entrance observed at viewport entry, avoiding stale scroll thresholds when content changes the page height. Reduced-motion and unsupported-observer users retain visible content.
+- Node 26.13.1 lint, three existing tests, production build, npm audit and `git diff --check` passed. Independent local Chromium checks verified footer entrance and re-entry at 320, 390 and 1440 px widths, reduced motion and the missing-IntersectionObserver fallback. A separate local check also covered a 2000 px viewport. Safari/iOS, physical devices, production and Sentry ingestion remain unverified.
+- User requested push, PR and squash merge after verification. Next: publish the verified footer changes through the existing `preview-branch` PR workflow, retain the branch and inspect deployment status.
+
 ## C3 verification and publication
 
 - User requested verification, security review, and publication of Node 26, motion, Highlights anchor and Vercel metadata changes. Active requirements: REQ-0016 through REQ-0019. Scoped local evaluation ER-C3-20261119-LOCAL passed; Gate 2 approved for the requested PR workflow.
 - Node 26.13.1 lint, three tunnel tests, production build and npm audit passed. Independent Chromium desktop/mobile and reduced-motion checks covered anchors, history restoration, motion, carousel, hero and 3D controls. Independent security review found no confirmed critical/high issue in scope.
 - Live Vercel, actual deployed runtime patch, Safari/iOS, physical devices, WAF settings and Sentry ingestion remain unverified. A command-line request received a Vercel challenge.
-- Next exact task: finish the authorized preview-branch PR and squash merge, then inspect the actual Vercel deployment. Retain the reusable branch.
+- PR #5 was squash-merged into main as 2b0423d; Vercel reports a successful deployment status for that commit. Retain preview-branch. Next exact task: verify the public site in a normal browser, including metadata, navigation, motion and the deployed Node runtime; automated access received a firewall challenge.
 
 ## C2 motion history (superseded)
 

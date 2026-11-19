@@ -15,6 +15,8 @@ export function usePageMotion(): React.RefObject<HTMLElement> {
       const elements = gsap.utils.toArray<HTMLElement>("[data-motion]", root.current);
       const cleanup: Array<() => void> = [];
       elements.forEach((element) => {
+        const observeViewport = element.dataset.motionTrigger === "viewport";
+        if (observeViewport && !("IntersectionObserver" in window)) return;
         const kind = element.dataset.motion;
         const children = element.querySelectorAll<HTMLElement>(":scope > [data-motion-item]");
         const targets = children.length ? Array.from(children) : [element];
@@ -28,9 +30,10 @@ export function usePageMotion(): React.RefObject<HTMLElement> {
           duration: 0.7,
           stagger: 0.1,
           ease: "power2.out",
+          paused: observeViewport,
           // Prepare offscreen elements before they enter; leave the initial viewport visible.
           immediateRender: !initiallyVisible,
-          scrollTrigger: {
+          scrollTrigger: observeViewport ? undefined : {
             trigger: element,
             start: "top 90%",
             end: "bottom 5%",
@@ -39,6 +42,17 @@ export function usePageMotion(): React.RefObject<HTMLElement> {
         });
         // Start visible content completed, but allow every later entry to replay.
         if (initiallyVisible) tween.progress(1);
+        if (observeViewport) {
+          // Intersection remains reliable when late-loading content shifts the page height.
+          const observer = new IntersectionObserver((entries) => {
+            const entry = entries[entries.length - 1];
+            if (!entry) return;
+            if (entry.isIntersecting) tween.play();
+            else tween.reverse();
+          });
+          observer.observe(element);
+          cleanup.push(() => observer.disconnect());
+        }
         // Focusable controls must never remain visually hidden during keyboard navigation.
         const revealFocused = (): void => { tween.progress(1).pause(); };
         element.addEventListener("focusin", revealFocused);

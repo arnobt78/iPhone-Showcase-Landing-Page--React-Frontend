@@ -6,7 +6,7 @@ Project Name: iPhone 15 Showcase
 Description: A React/Vite single-page product showcase with video, animation, and an interactive 3D model.
 
 Current Status: See `.agile-v/STATE.md` for current verification and deployment status.
-Current Agile V Cycle: C2
+Current Agile V Cycle: C3
 Current Gate: See `.agile-v/CHECKPOINTS.md`.
 
 ---

@@ -21,17 +21,20 @@ export function usePageMotion(): React.RefObject<HTMLElement> {
         const from = kind === "scale"
           ? { opacity: 0, scale: 0.96 }
           : { opacity: 0, y: kind === "down" ? -14 : 22, x: kind === "left" ? -18 : kind === "right" ? 18 : 0 };
+        const bounds = element.getBoundingClientRect();
+        const initiallyVisible = bounds.top < window.innerHeight && bounds.bottom > 0;
         const tween = gsap.from(targets, {
           ...from,
           duration: 0.7,
           stagger: 0.1,
           ease: "power2.out",
-          immediateRender: false,
+          // Prepare offscreen elements before they enter; leave the initial viewport visible.
+          immediateRender: !initiallyVisible,
           scrollTrigger: {
             trigger: element,
             start: "top 90%",
             end: "bottom 5%",
-            toggleActions: "play reverse play reverse",
+            toggleActions: initiallyVisible ? "none reverse play reverse" : "play reverse play reverse",
           },
         });
         // Focusable controls must never remain visually hidden during keyboard navigation.

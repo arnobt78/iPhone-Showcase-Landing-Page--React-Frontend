@@ -1,5 +1,5 @@
 ---
-eval_run_id: ER-C2-20261119-LOCAL
+eval_run_id: ER-C3-20261119-LOCAL
 eval_timestamp: 2026-11-18T18:12:22Z
 policy_version_ref: N/A
 eval_gate_status: PASS
@@ -30,3 +30,12 @@ The local browser checks used headless Chromium with software WebGL and Vite; th
 | 3D phone and carousel | REQ-0013, REQ-0015 | PASS | Independent desktop/mobile emulation checked drag and camera-angle preservation, carousel pause/resume and manual pause persistence. |
 | Automation and security | REQ-0012 through REQ-0015 | PASS WITH WARNINGS | Node 24.22.3 lint, three tunnel tests, build and npm audit passed. Independent review found no confirmed critical/high findings; optional Sentry privacy and request-volume limitations remain. |
 | Deployment and devices | REQ-0012 through REQ-0015 | UNVERIFIED | Netlify URL returned HTTP 404; Safari/iOS, physical devices and actual background suspension were not tested. |
+
+## C3 runtime, motion and navigation verification
+
+| Scope | Requirements | Result | Evidence and limits |
+| --- | --- | --- | --- |
+| Runtime and checks | REQ-0016 | PASS | Node 26.13.1 lint, three tunnel tests, production build and npm audit passed. Deployed runtime patch was not verified. |
+| Motion and anchors | REQ-0017, REQ-0018 | PASS | Independent Chromium desktop/mobile and reduced-motion checks covered scrolling, hero, carousel, 3D controls, direct links, refresh and history restoration. |
+| Metadata and security | REQ-0019 | PASS WITH WARNINGS | Local metadata matches the Vercel address. No confirmed critical/high issue in independent review; optional Sentry privacy, public tunnel volume and source-map risks remain. |
+| External coverage | REQ-0016 through REQ-0019 | UNVERIFIED | Live deployment, WAF behavior, physical devices, Safari/iOS and real Sentry were not tested. |

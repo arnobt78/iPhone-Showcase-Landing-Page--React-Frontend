@@ -18,3 +18,10 @@
 - REQ-0013 [new C2]: Slowly rotate the active phone view while visible; preserve manual orbit and the viewing angle across size changes.
 - REQ-0014 [new C2]: Provide coordinated, repeatable section and text reveals without hiding content when motion is disabled.
 - REQ-0015 [new C2]: Pause nonessential video and rotation while offscreen or hidden, preserving carousel playback controls.
+
+## C3 runtime and navigation requirements
+
+- REQ-0016: Select and verify a supported Node 26 build/runtime line.
+- REQ-0017: Avoid visible-to-hidden scroll entrance flashes while retaining reduced-motion support and repeat entrances.
+- REQ-0018: Resolve direct Highlights fragments and preserve browser history restoration.
+- REQ-0019: Align canonical and social metadata with the selected Vercel URL.

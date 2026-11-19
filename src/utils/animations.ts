@@ -1,5 +1,3 @@
-import type { RefObject } from "react";
-import type * as THREE from "three";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -22,39 +20,15 @@ export function animateWithGsap(
   });
 }
 
-/** Animates 3D group rotation then both view panels in parallel ("<" = same start time). Used when switching small/large model view. */
+/** Move both size views together without changing their camera orientation. */
 export function animateWithGsapTimeline(
   timeline: gsap.core.Timeline,
-  rotationRef: RefObject<THREE.Group>,
-  rotationState: number,
   firstTarget: string,
   secondTarget: string,
   animationProps: gsap.TweenVars
 ): void {
-  const group = rotationRef.current;
-  if (!group) return;
-  // Sync rotation state so the 3D model angle matches after view switch
-  timeline.to(group.rotation, {
-    y: rotationState,
-    duration: 1,
+  timeline.to([firstTarget, secondTarget], {
+    ...animationProps,
     ease: "power2.inOut",
   });
-
-  timeline.to(
-    firstTarget,
-    {
-      ...animationProps,
-      ease: "power2.inOut",
-    },
-    "<"
-  );
-
-  timeline.to(
-    secondTarget,
-    {
-      ...animationProps,
-      ease: "power2.inOut",
-    },
-    "<"
-  );
 }

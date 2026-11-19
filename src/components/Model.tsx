@@ -1,6 +1,4 @@
-import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import * as THREE from "three";
 import { Canvas } from "@react-three/fiber";
 import { View } from "@react-three/drei";
 import { useEffect, useRef, useState } from "react";
@@ -28,69 +26,89 @@ function Model(): React.ReactElement {
 
   const cameraControlSmall = useRef<OrbitControlsRef | null>(null);
   const cameraControlLarge = useRef<OrbitControlsRef | null>(null);
-  const small = useRef<THREE.Group>(new THREE.Group());
-  const large = useRef<THREE.Group>(new THREE.Group());
-  const [smallRotation, setSmallRotation] = useState(0);
-  const [largeRotation, setLargeRotation] = useState(0);
-  const tlRef = useRef(gsap.timeline());
+  const modelRegion = useRef<HTMLDivElement>(null);
+  const resumeTimer = useRef<ReturnType<typeof setTimeout>>();
+  const [visible, setVisible] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(true);
+  const [interacting, setInteracting] = useState(false);
 
-  // When size changes, run timeline: animate rotation of the outgoing view's group, then translate both view divs
   useEffect(() => {
-    const tl = tlRef.current;
-    if (size === "large") {
-      animateWithGsapTimeline(
-        tl,
-        small,
-        smallRotation,
-        "#view1",
-        "#view2",
-        { transform: "translateX(-100%)", duration: 2 }
-      );
-    }
-    if (size === "small") {
-      animateWithGsapTimeline(
-        tl,
-        large,
-        largeRotation,
-        "#view2",
-        "#view1",
-        { transform: "translateX(0)", duration: 2 }
-      );
-    }
-  }, [size, smallRotation, largeRotation]);
-
-  useGSAP(() => {
-    gsap.to("#heading", { y: 0, opacity: 1 });
+    const region = modelRegion.current;
+    if (!region) return;
+    const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let intersecting = false;
+    const updatePreference = (): void => setReducedMotion(preference.matches);
+    const updateVisibility = (): void => setVisible(intersecting && !document.hidden);
+    updatePreference();
+    preference.addEventListener("change", updatePreference);
+    document.addEventListener("visibilitychange", updateVisibility);
+    const observer = "IntersectionObserver" in window ? new IntersectionObserver(([entry]) => {
+      intersecting = Boolean(entry?.isIntersecting);
+      updateVisibility();
+    }, { threshold: 0.1 }) : null;
+    if (observer) observer.observe(region);
+    else { intersecting = true; updateVisibility(); }
+    return () => {
+      observer?.disconnect();
+      preference.removeEventListener("change", updatePreference);
+      document.removeEventListener("visibilitychange", updateVisibility);
+      clearTimeout(resumeTimer.current);
+    };
   }, []);
+
+  const pauseRotation = (): void => {
+    clearTimeout(resumeTimer.current);
+    setInteracting(true);
+  };
+  const resumeRotation = (): void => {
+    clearTimeout(resumeTimer.current);
+    resumeTimer.current = setTimeout(() => setInteracting(false), 2000);
+  };
+
+  // Keep size transitions independent of the cameras' current orbit angles.
+  useEffect(() => {
+    if (reducedMotion) {
+      gsap.set("#view1, #view2", { xPercent: size === "large" ? -100 : 0 });
+      return;
+    }
+    const timeline = gsap.timeline();
+    animateWithGsapTimeline(timeline, "#view1", "#view2", {
+      xPercent: size === "large" ? -100 : 0,
+      duration: 2,
+    });
+    return () => { timeline.kill(); };
+  }, [size, reducedMotion]);
 
   return (
     <section className="common-padding">
       <div className="screen-max-width">
-        <h1 id="heading" className="section-heading">
+        <h1 id="heading" className="section-heading" data-motion="up">
           Take a closer look.
         </h1>
 
         <div className="flex flex-col items-center mt-5">
-          <div className="w-full h-[75vh] md:h-[90vh] overflow-hidden relative">
+          <div ref={modelRegion} className="w-full h-[75vh] md:h-[90vh] overflow-hidden relative">
             {/* view1 = small (6.1"); view2 = large (6.7"). Both share same Canvas via View.Port below. */}
             <ModelView
               index={1}
-              groupRef={small}
               gsapType="view1"
               controlRef={cameraControlSmall}
-              setRotationState={setSmallRotation}
               item={model}
               size={size}
+              autoRotate={visible && !reducedMotion && !interacting && size === "small"}
+              onInteractionStart={pauseRotation}
+              onInteractionEnd={resumeRotation}
             />
 
             <ModelView
               index={2}
-              groupRef={large}
               gsapType="view2"
               controlRef={cameraControlLarge}
-              setRotationState={setLargeRotation}
               item={model}
               size={size}
+              autoRotate={visible && !reducedMotion && !interacting && size === "large"}
+              onInteractionStart={pauseRotation}
+              onInteractionEnd={resumeRotation}
             />
 
             <Canvas
@@ -109,10 +127,10 @@ function Model(): React.ReactElement {
             </Canvas>
           </div>
 
-          <div className="mx-auto w-full">
-            <p className="text-sm font-light text-center mb-5">{model.title}</p>
+          <div className="mx-auto w-full" data-motion="up">
+            <p className="text-sm font-light text-center mb-5" data-motion-item>{model.title}</p>
 
-            <div className="flex-center">
+            <div className="flex-center" data-motion-item>
               <ul className="color-container">
                 {models.map((item) => (
                   <li key={item.id}>
@@ -140,7 +158,22 @@ function Model(): React.ReactElement {
                         size === value ? "white" : "transparent",
                       color: size === value ? "black" : "white",
                     }}
-                    onClick={() => setSize(value)}
+                    onClick={() => {
+                      if (value === size) return;
+                      pauseRotation();
+                      const current = size === "small" ? cameraControlSmall.current : cameraControlLarge.current;
+                      const next = value === "small" ? cameraControlSmall.current : cameraControlLarge.current;
+                      if (current && next) {
+                        // Copy both camera angles without damping so the new view starts at the same orientation.
+                        const damping = next.enableDamping;
+                        next.enableDamping = false;
+                        next.setAzimuthalAngle(current.getAzimuthalAngle());
+                        next.setPolarAngle(current.getPolarAngle());
+                        next.enableDamping = damping;
+                      }
+                      setSize(value);
+                      resumeRotation();
+                    }}
                   >
                     {label}
                   </button>

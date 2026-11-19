@@ -19,9 +19,11 @@ interface VideoState {
 
 /** Four-slide carousel: each slide has video + text. Refs hold DOM refs per index; GSAP moves #slider and drives progress bars. */
 function VideoCarousel(): React.ReactElement {
+  const carouselRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<(HTMLVideoElement | null)[]>([]);
   const videoSpanRef = useRef<(HTMLSpanElement | null)[]>([]);
   const videoDivRef = useRef<(HTMLSpanElement | null)[]>([]);
+  const slideTextRef = useRef<(HTMLDivElement | null)[]>([]);
 
   const [video, setVideo] = useState<VideoState>({
     isEnd: false,
@@ -31,14 +33,39 @@ function VideoCarousel(): React.ReactElement {
     isPlaying: false,
   });
   const [furthestSlide, setFurthestSlide] = useState(0);
+  const [visible, setVisible] = useState(false);
 
   const { isEnd, isLastVideo, startPlay, videoId, isPlaying } = video;
+
+  useEffect(() => {
+    const carousel = carouselRef.current;
+    if (!carousel) return;
+    const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let intersecting = false;
+    const update = (): void => setVisible(intersecting && !document.hidden);
+    const updatePreference = (): void => {
+      if (preference.matches) setVideo((previous) => ({ ...previous, isPlaying: false }));
+    };
+    const observer = "IntersectionObserver" in window ? new IntersectionObserver(([entry]) => {
+      intersecting = Boolean(entry?.isIntersecting);
+      update();
+    }, { threshold: 0.1 }) : null;
+    if (observer) observer.observe(carousel);
+    else { intersecting = true; update(); }
+    document.addEventListener("visibilitychange", update);
+    preference.addEventListener("change", updatePreference);
+    return () => {
+      observer?.disconnect();
+      document.removeEventListener("visibilitychange", update);
+      preference.removeEventListener("change", updatePreference);
+    };
+  }, []);
 
   // Slide position by videoId; when video ends we advance and this re-runs
   useGSAP(() => {
     gsap.to("#slider", {
       transform: `translateX(${-100 * videoId}%)`,
-      duration: 2,
+      duration: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 2,
       ease: "power2.inOut",
     });
 
@@ -51,11 +78,36 @@ function VideoCarousel(): React.ReactElement {
         setVideo((pre) => ({
           ...pre,
           startPlay: true,
-          isPlaying: true,
+          isPlaying: pre.startPlay ? pre.isPlaying : !window.matchMedia("(prefers-reduced-motion: reduce)").matches,
         }));
       },
     });
   }, [isEnd, videoId]);
+
+  // Reveal the active slide's copy as it arrives, and again on viewport re-entry.
+  useGSAP(() => {
+    const text = slideTextRef.current[videoId];
+    if (!startPlay || !text) return;
+    const motion = gsap.matchMedia();
+    motion.add("(prefers-reduced-motion: no-preference)", () => {
+      gsap.from(text.querySelectorAll("p"), {
+        opacity: 0,
+        y: 16,
+        duration: 0.6,
+        stagger: 0.1,
+        delay: videoId === 0 ? 0 : 0.6,
+        ease: "power2.out",
+        immediateRender: false,
+        scrollTrigger: {
+          trigger: text,
+          start: "top 90%",
+          end: "bottom 5%",
+          toggleActions: "play reverse play reverse",
+        },
+      });
+    });
+    return () => motion.revert();
+  }, { dependencies: [videoId, startPlay], revertOnUpdate: true });
 
   // Progress bar: GSAP tween on span; onUpdate syncs width to progress; gsap.ticker drives progress from video currentTime
   useEffect(() => {
@@ -113,7 +165,7 @@ function VideoCarousel(): React.ReactElement {
         anim.progress(vid.currentTime / slide.videoDuration);
     };
 
-    if (isPlaying) {
+    if (isPlaying && visible) {
       gsap.ticker.add(animUpdate);
     } else {
       gsap.ticker.remove(animUpdate);
@@ -122,7 +174,7 @@ function VideoCarousel(): React.ReactElement {
     return () => {
       gsap.ticker.remove(animUpdate);
     };
-  }, [videoId, startPlay, isPlaying]);
+  }, [videoId, startPlay, isPlaying, visible]);
 
   // Only the active slide needs to load before playback can start.
   useEffect(() => {
@@ -130,7 +182,7 @@ function VideoCarousel(): React.ReactElement {
     const current = vRef[videoId];
     if (!current) return;
     let cancelled = false;
-    if (!isPlaying) {
+    if (!isPlaying || !visible) {
       current.pause();
     } else if (startPlay) {
       void current.play().catch((error: unknown) => {
@@ -140,7 +192,7 @@ function VideoCarousel(): React.ReactElement {
       });
     }
     return () => { cancelled = true; };
-  }, [startPlay, videoId, isPlaying]);
+  }, [startPlay, videoId, isPlaying, visible]);
 
   type ProcessType =
     | "video-end"
@@ -157,10 +209,10 @@ function VideoCarousel(): React.ReactElement {
         setVideo((pre) => ({ ...pre, isEnd: true, videoId: (i ?? 0) + 1 }));
         break;
       case "video-last":
-        setVideo((pre) => ({ ...pre, isLastVideo: true }));
+        setVideo((pre) => ({ ...pre, isLastVideo: true, isPlaying: false }));
         break;
       case "video-reset":
-        setVideo((pre) => ({ ...pre, videoId: 0, isLastVideo: false }));
+        setVideo((pre) => ({ ...pre, videoId: 0, isLastVideo: false, isPlaying: true }));
         break;
       case "pause":
         setVideo((pre) => ({ ...pre, isPlaying: !pre.isPlaying }));
@@ -174,7 +226,7 @@ function VideoCarousel(): React.ReactElement {
   };
 
   return (
-    <>
+    <div ref={carouselRef}>
       <div className="flex items-center">
         {highlightsSlides.map((list, i) => (
           <div key={list.id} id="slider" className="sm:pr-20 pr-10">
@@ -203,7 +255,7 @@ function VideoCarousel(): React.ReactElement {
                 />
               </div>
 
-              <div className="absolute top-12 left-[5%] z-10">
+              <div className="absolute top-12 left-[5%] z-10" ref={(el) => { slideTextRef.current[i] = el; }}>
                 {list.textLists.map((text, j) => (
                   <p key={j} className="md:text-2xl text-xl font-medium">
                     {text}
@@ -255,7 +307,7 @@ function VideoCarousel(): React.ReactElement {
           />
         </button>
       </div>
-    </>
+    </div>
   );
 }
 

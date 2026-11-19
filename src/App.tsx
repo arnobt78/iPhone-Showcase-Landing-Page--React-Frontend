@@ -6,11 +6,13 @@ import Features from "./components/Features";
 import HowItWorks from "./components/HowItWorks";
 import Footer from "./components/Footer";
 import * as Sentry from "@sentry/react";
+import { usePageMotion } from "./hooks/usePageMotion";
 
 /** Root App: single-page layout. Each child is a full-width section; order = scroll order. */
 function AppRoot(): React.ReactElement {
+  const root = usePageMotion();
   return (
-    <main className="bg-black">
+    <main ref={root} className="bg-black">
       <Navbar />
       <Hero />
       <Highlights />

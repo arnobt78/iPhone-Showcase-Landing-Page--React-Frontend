@@ -8,3 +8,4 @@
 - C1 REQ-0009–0010: User approved constraining the chip animation and generating source maps only for builds with the Sentry upload token.
 - C1 REQ-0001–0010: User approved the non-www intended Netlify URL, retaining optional Sentry, environment-file protection and a task-branch → preview-branch → main PR workflow. The URL remains unverified until deployment.
 - C1 REQ-0011: User requested publication of the remaining instruction files and license edit, and removal of the completed feature branch after its changes are verified in main. Preserve generated files and do not deploy or clean the user's storage automatically.
+- C2 REQ-0012–0015: User approved subtle replayable reveals, visible-only hero looping and slow 3D rotation with manual orbit and reduced-motion support. Reuse GSAP and existing media; keep publication outside this implementation step.

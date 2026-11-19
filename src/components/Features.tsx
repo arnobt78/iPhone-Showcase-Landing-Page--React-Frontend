@@ -1,63 +1,35 @@
-import { useGSAP } from "@gsap/react";
 import { useNearbyVideo } from "../hooks/useNearbyVideo";
-import gsap from "gsap";
-import { animateWithGsap } from "../utils/animations";
 import { explore1Img, explore2Img, exploreVideo } from "../utils";
 
-/** "Explore the full story": heading, two big titles, explore video, two images (g_grow), two text blocks (g_text). All scroll-triggered. */
+/** Product story with viewport-loaded video and scroll-triggered content. */
 function Features(): React.ReactElement {
   const [videoRef, nearby] = useNearbyVideo();
-
-  useGSAP(() => {
-    gsap.to("#exploreVideo", {
-      scrollTrigger: {
-        trigger: "#exploreVideo",
-        toggleActions: "play pause reverse restart",
-        start: "-10% bottom",
-      },
-      onComplete: () => {
-        void videoRef.current?.play().catch(() => {});
-      },
-    });
-
-    animateWithGsap("#features_title", { y: 0, opacity: 1 });
-    animateWithGsap(".g_grow", { scale: 1, opacity: 1, ease: "power1" }, {
-      scrub: 5.5,
-    });
-    animateWithGsap(".g_text", {
-      y: 0,
-      opacity: 1,
-      ease: "power2.inOut",
-      duration: 1,
-    });
-  }, []);
 
   return (
     <section className="h-full common-padding bg-zinc relative overflow-hidden">
       <div className="screen-max-width">
         <div className="mb-12 w-full">
-          <h1 id="features_title" className="section-heading">
+          <h1 id="features_title" className="section-heading" data-motion="up">
             Explore the full story.
           </h1>
         </div>
 
         <div className="flex flex-col justify-center items-center overflow-hidden">
-          <div className="mt-32 mb-24 pl-24">
-            <h2 className="text-5xl lg:text-7xl font-semibold">iPhone.</h2>
-            <h2 className="text-5xl lg:text-7xl font-semibold">
+          <div className="mt-32 mb-24 pl-24" data-motion="left">
+            <h2 className="text-5xl lg:text-7xl font-semibold" data-motion-item>iPhone.</h2>
+            <h2 className="text-5xl lg:text-7xl font-semibold" data-motion-item>
               Forged in titanium.
             </h2>
           </div>
 
           <div className="flex-center flex-col sm:px-10">
-            <div className="relative h-[50vh] w-full flex items-center">
+            <div className="relative h-[50vh] w-full flex items-center" data-motion="scale">
               <video
                 playsInline
                 id="exploreVideo"
                 className="w-full h-full object-cover object-center"
-                preload="none"
+                preload="metadata"
                 muted
-                autoPlay
                 ref={videoRef}
                 src={nearby ? exploreVideo : undefined}
               >
@@ -66,25 +38,25 @@ function Features(): React.ReactElement {
 
             <div className="flex flex-col w-full relative">
               <div className="feature-video-container">
-                <div className="overflow-hidden flex-1 h-[50vh]">
+                <div className="overflow-hidden flex-1 h-[50vh]" data-motion="left">
                   <img
                     src={explore1Img}
                     alt="titanium"
-                    className="feature-video g_grow"
+                    className="feature-video"
                   />
                 </div>
-                <div className="overflow-hidden flex-1 h-[50vh]">
+                <div className="overflow-hidden flex-1 h-[50vh]" data-motion="right">
                   <img
                     src={explore2Img}
                     alt="titanium 2"
-                    className="feature-video g_grow"
+                    className="feature-video"
                   />
                 </div>
               </div>
 
               <div className="feature-text-container">
-                <div className="flex-1 flex-center">
-                  <p className="feature-text g_text">
+                <div className="flex-1 flex-center" data-motion="up">
+                  <p className="feature-text">
                     iPhone 15 Pro is{" "}
                     <span className="text-white">
                       the first iPhone to feature an aerospace-grade titanium
@@ -95,8 +67,8 @@ function Features(): React.ReactElement {
                   </p>
                 </div>
 
-                <div className="flex-1 flex-center">
-                  <p className="feature-text g_text">
+                <div className="flex-1 flex-center" data-motion="up">
+                  <p className="feature-text">
                     Titanium has one of the best strength-to-weight ratios of any
                     metal, making these our{" "}
                     <span className="text-white">

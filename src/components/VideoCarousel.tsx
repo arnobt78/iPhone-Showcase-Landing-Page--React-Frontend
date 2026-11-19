@@ -90,14 +90,17 @@ function VideoCarousel(): React.ReactElement {
     if (!startPlay || !text) return;
     const motion = gsap.matchMedia();
     motion.add("(prefers-reduced-motion: no-preference)", () => {
-      gsap.from(text.querySelectorAll("p"), {
+      const bounds = text.getBoundingClientRect();
+      const initiallyVisible = videoId === 0 && bounds.top < window.innerHeight && bounds.bottom > 0;
+      const tween = gsap.from(text.querySelectorAll("p"), {
         opacity: 0,
         y: 16,
         duration: 0.6,
         stagger: 0.1,
         delay: videoId === 0 ? 0 : 0.6,
         ease: "power2.out",
-        immediateRender: false,
+        // Prepare incoming slides before they move into view, without hiding initial visible copy.
+        immediateRender: !initiallyVisible,
         scrollTrigger: {
           trigger: text,
           start: "top 90%",
@@ -105,6 +108,7 @@ function VideoCarousel(): React.ReactElement {
           toggleActions: "play reverse play reverse",
         },
       });
+      if (initiallyVisible) tween.progress(1);
     });
     return () => motion.revert();
   }, { dependencies: [videoId, startPlay], revertOnUpdate: true });

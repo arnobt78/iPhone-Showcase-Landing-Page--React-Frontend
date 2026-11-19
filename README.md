@@ -6,11 +6,11 @@
 [![Vite](https://img.shields.io/badge/Vite-7.3.8-646CFF)](https://vite.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.19-38BDF8)](https://tailwindcss.com/)
 [![Three.js](https://img.shields.io/badge/Three.js-0.169.0-black)](https://threejs.org/)
-[![Node.js](https://img.shields.io/badge/Node.js-24.x-339933)](https://nodejs.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-26.x-339933)](https://nodejs.org/)
 
 A learning project that recreates an iPhone 15 Pro product showcase with React, 3D graphics, video and scroll animations. It is an independent frontend demo, not an Apple store: it does not sell products or process orders.
 
-- **Intended demo URL:** [https://iphone15-showcase.netlify.app/](https://iphone15-showcase.netlify.app/) (not deployed or confirmed yet)
+- **Live Demo:** [https://iphone-marketing.vercel.app/](https://iphone-marketing.vercel.app/)
 - **Security:** private reports → [SECURITY.md](./SECURITY.md) · [contact@arnobmahmud.com](mailto:contact@arnobmahmud.com)
 
 ![Image 1](https://github.com/user-attachments/assets/d57a6315-de97-43ff-9ce0-987a3c065e0a)
@@ -50,12 +50,12 @@ The header labels, search and bag icons, film/event text and footer legal labels
 
 ## Getting started
 
-Install [Node.js 24](https://nodejs.org/) and npm. `.nvmrc` specifies Node 24 for users of nvm; `package.json` selects `24.x` for compatible deployment platforms. Badges show the versions in the lockfile; consult that file for exact resolved versions.
+Install [Node.js 26](https://nodejs.org/) and npm. `.nvmrc` specifies Node 26 for users of nvm; `package.json` selects `26.x` for compatible deployment platforms. Badges show the versions in the lockfile; consult that file for exact resolved versions.
 
 ```bash
 git clone https://github.com/arnobt78/iphone.git
 cd iphone
-nvm use          # if using nvm; install Node 24 first if needed
+nvm use          # if using nvm; install Node 26 first if needed
 npm ci
 npm run dev
 ```
@@ -175,7 +175,7 @@ A **component** is a reusable UI function; **state** holds changing UI choices; 
 
 ## Deployment and usage
 
-For Netlify, the repository specifies build command `npm run build`, publish directory `dist`, a monitoring function rewrite, security headers and a fallback to `index.html`. Select Node 24 and set optional Sentry variables only if needed. Preview and test the function and site before assigning a production domain. A local `npm run preview` alone does not verify Netlify functions.
+For Netlify, the repository specifies build command `npm run build`, publish directory `dist`, a monitoring function rewrite, security headers and a fallback to `index.html`. Select Node 26 for the build and set optional Sentry variables only if needed. Verify the actual function runtime separately: the host may use a different supported version. Preview and test the function and site before assigning a production domain. A local `npm run preview` alone does not verify Netlify functions.
 
 To deploy from a Git connection, commit and push the intended changes first, then select the branch containing them in Netlify. A manual CLI deploy can include the function from the working tree: run `npx netlify-cli login`, then `npx netlify-cli deploy --build` from the project folder for a preview. After checking it, use `npx netlify-cli deploy --prod --build` for production. Choose the intended team when prompted. Uploading only `dist/` does not include the source function.
 
@@ -183,7 +183,7 @@ For Vercel, `vercel.json` configures security headers and the SPA fallback, and 
 
 Both platforms meter traffic. Large videos can consume substantial bandwidth, and the exact cause of the previous Vercel transfer spike is not established. Inspect requests by path, bytes and source, and monitor usage after deployment. Netlify's Free plan also has a team-wide credit limit; verify current plan terms before putting this demo alongside important projects. A separate team can limit the impact on other sites, subject to the account's plan and rules.
 
-The canonical and social-image URLs in `index.html` use the intended Netlify address. Confirm that address after deployment and update them if Netlify assigns a different URL. Static SPA rewrites do not provide a monitoring function unless the host supports the configured adapter.
+The canonical and social-image URLs in `index.html` use the Vercel address; verify the final deployed domain and metadata after publishing. Static SPA rewrites do not provide a monitoring function unless the host supports the configured adapter.
 
 ---
 
@@ -192,7 +192,7 @@ The canonical and social-image URLs in `index.html` use the intended Netlify add
 - **Blank 3D scene:** Check WebGL support, browser console and that `/models/scene.glb` and the texture images load. Test on a real device as well as emulation.
 - **Videos do not play:** Check network requests, browser autoplay policy and video codec support. Lower-page videos and carousel slides load on demand.
 - **Sentry event missing:** Confirm the DSN was present at build time, the correct host function has `SENTRY_INGEST_URL`, and the tunnel response is not `204` because the upstream is unset. Inspect host logs without exposing tokens or event contents. Test with a safe event in your own Sentry project.
-- **Build or install fails:** Confirm `node -v` is 24.x, run `npm ci`, then rerun lint, tests and build. Keep `package-lock.json` with the manifest.
+- **Build or install fails:** Confirm `node -v` is 26.x, run `npm ci`, then rerun lint, tests and build. Keep `package-lock.json` with the manifest.
 - **High transfer:** Inspect host usage and request-level data before assigning a cause. CDN caching can improve latency and origin usage, but data delivered to visitors can still count against bandwidth quotas.
 
 Automated tests currently focus on the tunnel. Browser behavior, third-party services, host configuration and physical-device compatibility require additional verification; a clean audit or build is not proof of complete security or production readiness.

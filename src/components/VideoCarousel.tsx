@@ -92,7 +92,7 @@ function VideoCarousel(): React.ReactElement {
     motion.add("(prefers-reduced-motion: no-preference)", () => {
       const bounds = text.getBoundingClientRect();
       const initiallyVisible = videoId === 0 && bounds.top < window.innerHeight && bounds.bottom > 0;
-      gsap.from(text.querySelectorAll("p"), {
+      const tween = gsap.from(text.querySelectorAll("p"), {
         opacity: 0,
         y: 16,
         duration: 0.6,
@@ -105,9 +105,10 @@ function VideoCarousel(): React.ReactElement {
           trigger: text,
           start: "top 90%",
           end: "bottom 5%",
-          toggleActions: initiallyVisible ? "none reverse play reverse" : "play reverse play reverse",
+          toggleActions: "play reverse play reverse",
         },
       });
+      if (initiallyVisible) tween.progress(1);
     });
     return () => motion.revert();
   }, { dependencies: [videoId, startPlay], revertOnUpdate: true });

@@ -34,9 +34,11 @@ export function usePageMotion(): React.RefObject<HTMLElement> {
             trigger: element,
             start: "top 90%",
             end: "bottom 5%",
-            toggleActions: initiallyVisible ? "none reverse play reverse" : "play reverse play reverse",
+            toggleActions: "play reverse play reverse",
           },
         });
+        // Start visible content completed, but allow every later entry to replay.
+        if (initiallyVisible) tween.progress(1);
         // Focusable controls must never remain visually hidden during keyboard navigation.
         const revealFocused = (): void => { tween.progress(1).pause(); };
         element.addEventListener("focusin", revealFocused);

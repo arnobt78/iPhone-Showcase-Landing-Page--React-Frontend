@@ -7,14 +7,14 @@
 - Live Vercel, actual deployed runtime patch, Safari/iOS, physical devices, WAF settings and Sentry ingestion remain unverified. A command-line request received a Vercel challenge.
 - Next exact task: finish the authorized preview-branch PR and squash merge, then inspect the actual Vercel deployment. Retain the reusable branch.
 
-## C2 motion update
+## C2 motion history (superseded)
 
 - Stage: local implementation and independent verification complete; Gate 1 and Gate 2 approved; scoped evaluation ER-C2-20261119-LOCAL passed. Active requirements: REQ-0012 through REQ-0015.
 - Completed: responsive hero loops only while visible; reduced motion and autoplay failure use a poster. The active 3D view rotates slowly, pauses during interaction and keeps its camera angles across size changes. GSAP section and text reveals replay on re-entry, with content visible by default and reduced-motion support. Carousel and lower-section videos pause offscreen; reduced-motion users can explicitly play the carousel.
 - Validation: Node 24 lint, three existing tunnel tests, production build and `git diff --check` passed. Independent headless Chromium desktop/mobile emulation verified hero looping and fallback, media visibility and reduced motion, carousel manual pause/replay, 3D rotation and angle preservation, section re-entry, and 320/390/1440 px overflow. A local 11-second hero loop produced one video request. No page or console errors were observed in the checked scenarios.
-- Limits: physical devices, Safari/iOS, real background suspension, live Netlify behavior and production transfer impact remain unverified; the reported Netlify URL returned HTTP 404 during verification. The user reported the site deployed, but this motion change is local only.
+- Limits: physical devices, Safari/iOS, real background suspension, live Netlify behavior and production transfer impact remain unverified; the reported Netlify URL returned HTTP 404 during verification. C2 was merged; production behavior for C3 remains unverified.
 - Branch: `preview-branch`. Preserve the user's pre-existing README live-URL edit. C2 was committed as 970d383, pushed, and squash-merged via PR #4 to main as a550dc7. The pre-existing README live-URL edit remains unstaged.
-- Next exact task: investigate why the reported Netlify URL returns HTTP 404, confirm the correct site and deployment in Netlify, then verify the deployed motion changes. This post-merge handoff update remains local.
+- Historical handoff: Netlify access was suspended; the user moved the project to Vercel.
 
 ## C1 history
 
@@ -30,23 +30,23 @@
 
 C1 EvalGate: status=PASS | eval_run_id=ER-C1-20261119-LOCAL | policy_version_ref=N/A | eval_results_path=.agile-v/EVAL_RESULTS.md
 
-## Reusable deployment guide handoff
+## Reusable deployment guide history (superseded)
 
 - Updated the three previously untracked Vercel guides for stack-specific deployment, security, media and migration decisions; committed locally on `preview-branch` as `e4c900b`.
 - Independent documentation/security review found no blocking issues. Node 24 isolated copy-script success and missing-source checks passed; Markdown fences, local links, official reference URLs and staged diff were checked. The Next.js image example was reviewed statically, not run in a Next.js harness; live deployment and firewall behavior were not tested.
 - Existing README and prior state changes remain unstaged. No push, PR, merge or hosting changes were performed for the guide update.
-- Next exact task: if the user requests publication, review the local commit and working tree, then use the authorized preview-branch PR workflow; otherwise copy the guides into projects as needed.
+- The user subsequently requested publication with C3.
 
-## Node 26 and motion continuity
+## Node 26 and motion implementation history (superseded)
 
 - User approved the Node 26 and scroll-flash plan. On `preview-branch`, the Node engine, lockfile root, `.nvmrc` and affected README guidance target 26.x; existing Vercel URL edits remain preserved. Section and carousel entrances prepare offscreen content while keeping initially visible content available.
 - Node 26.13.1: `npm ci`, lint, three existing tests, production build and npm audit passed. Independent Chromium desktop/mobile emulation covered initial display, repeat and rapid scroll, carousel slide changes, focus and reduced motion. No live Vercel deployment was tested. The client-rendered SPA does not render its page without JavaScript; no-JS support would require a separate architectural change.
 - npm reported deprecated `three-mesh-bvh` and ESLint packages and install-script notices; no dependency upgrade was included in the approved scope. The Node 26 install and regenerated `node_modules`/`dist` remain local.
-- No commit, push, PR or deployment was performed. Next exact task: review the local diff and, if requested, run the separate authorized commit and publication workflow; then validate the final deployment and actual runtime in Vercel.
+- At that checkpoint no commit or publication had been performed.
 - Independent verifier also confirmed hero playback/loop, offscreen pause, 3D size and color selection after the entrance settled, and no console errors in the tested desktop/mobile Chromium scenarios. A direct `/#highlights` navigation remained at the top in one test; its cause and pre-existing status were not established. Physical Safari/iOS and production remain unverified.
 
-## Highlights direct-link fix
+## Highlights direct-link implementation history (superseded)
 
 - User approved fixing the direct `/#highlights` load. React now scrolls to Highlights after initial rendering for fresh visits and reloads, while allowing browser restoration on back/forward navigation. Existing Buy link and other local changes are preserved.
 - Node 26.13.1 lint, three existing tests and production build passed; lint and build were rerun after the history adjustment. Independent Chromium checks at desktop and mobile sizes, including reduced motion, passed direct load, refresh, Buy, back/forward and cross-document scroll restoration. Safari/iOS, physical devices and live Vercel remain untested.
-- No commit, push, PR or deployment was performed. Next exact task: review the combined uncommitted Node 26, animation, URL and anchor changes, then follow a separately authorized publication workflow.
+- At that checkpoint no commit or publication had been performed.
